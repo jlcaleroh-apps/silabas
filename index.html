@@ -94,6 +94,17 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .word-chip{font-family:var(--f-read);font-weight:700;font-size:24px;padding:4px 16px;border-radius:14px;background:var(--magenta);color:#fff;display:flex;align-items:center;gap:8px}
 .word-chip .e{font-size:24px}
 .words-empty{color:var(--muted);font-size:16px}
+.info-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--muted);font-weight:800;font-size:24px;border:2px solid var(--space-3)}
+.streak{display:flex;align-items:center;gap:10px;background:var(--space-2);border:2px solid var(--space-3);border-radius:18px;padding:6px 14px}
+.streak-n{font-size:34px;font-weight:800;color:var(--energy);line-height:1;font-variant-numeric:tabular-nums}
+.streak-l{font-size:15px;line-height:1.15;color:var(--muted)}
+.streak-l b{display:block;color:var(--ink);font-size:17px}
+.streak-dots{display:flex;gap:4px}
+.streak-dots i{width:12px;height:12px;border-radius:50%;background:var(--space-3)}
+.streak-dots i.on{background:var(--energy);box-shadow:0 0 6px rgba(255,212,71,.7)}
+.info-card h3{font-family:var(--f-display);font-size:20px;margin:6px 0 0}
+.info-card ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;line-height:1.4}
+.info-card li b{color:var(--space-2)}
 .next-planet{display:flex;align-items:center;gap:10px;background:var(--space-2);border-radius:18px;padding:8px 14px;font-size:15px;line-height:1.2;color:var(--muted)}
 .mini-planet{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#bfa8ff,#6b55c9 60%,#3b2c86);display:grid;place-items:center;font-weight:800;color:#fff;font-size:20px;flex:none;position:relative}
 .mini-planet.locked::after{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(21,18,58,.55)}
@@ -404,6 +415,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
       <div class="brand"><small>Misión sílabas</small>Robot Sílabo</div>
       <div class="top-right">
       <button id="kidChip" class="kid-chip" aria-label="Cambiar de jugador"></button>
+      <button id="infoBtn" class="info-btn" aria-label="Información de la app">?</button>
       <button id="gear" class="gear" aria-label="Panel del adulto: mantén presionado">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>
       </button>
@@ -413,6 +425,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
       <div class="planet-wrap"><div id="homePlanet"></div><div class="planet-name">Planeta M</div></div>
       <div class="home-side">
         <button class="home-robot" id="homeRobot" aria-label="Sílabo"></button>
+        <div id="streak"></div>
         <div id="homeCta"></div>
       </div>
     </div>
@@ -456,6 +469,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 <div id="adult" class="sheet" hidden></div>
 <div id="confirm" class="sheet" hidden></div>
 <div id="form" class="sheet" hidden></div>
+<div id="info" class="sheet" hidden></div>
 
 <script src="respaldo.js"></script>
 <script>
@@ -475,13 +489,14 @@ function freshSyl(){ return {heard:0, read:0, fast:0, miss:0, last:null}; }
 function freshState(color = null){
   return {v:2, sessions:0, last:null, dayShift:0,
     syl:Object.fromEntries(SYL.map(s => [s, freshSyl()])),
-    words:[], owned:[], color, races:{}, raceLog:[], daily:{date:null, n:0}, pSeen:false};
+    words:[], owned:[], color, races:{}, raceLog:[], daily:{date:null, n:0}, streak:{n:0, last:null, best:0}, pSeen:false};
 }
 function normState(d){
   const s = Object.assign(freshState(), d || {});
   s.syl = Object.fromEntries(SYL.map(k => [k, Object.assign(freshSyl(), ((d || {}).syl || {})[k] || {})]));
   if (!Array.isArray(s.raceLog)) s.raceLog = Object.entries(s.races || {}).sort().map(([date, count]) => ({date, count}));
   if (!s.daily) s.daily = {date:null, n:0};
+  if (!s.streak) s.streak = {n:0, last:null, best:0};
   return s;
 }
 /* Varios niños en el mismo iPad: cada perfil guarda su propio progreso. */
@@ -708,7 +723,9 @@ const ROCKET = `<svg viewBox="0 0 120 200" aria-hidden="true">
 </svg>`;
 const MINI_ROCKET = c => `<svg viewBox="0 0 64 38"><path d="M2 19 L12 12 L12 26 Z" fill="#ffd447"/><path d="M10 9 H44 C56 9 62 19 62 19 C62 19 56 29 44 29 H10 Z" fill="${c}"/><circle cx="42" cy="19" r="6" fill="#1b2050" stroke="#62e6e1" stroke-width="2"/><path d="M16 9 L10 1 L26 9 Z M16 29 L10 37 L26 29 Z" fill="#e0478f"/></svg>`;
 
+let planetSeq = 0;
 function planetSVG(stage, popLast = false){
+  const u = 'p' + (++planetSeq);   // ids únicos: si dos planetas comparten id, el oculto deja sin color al visible
   const cx = 200, cy = 200, R = 112;
   const items = [];
   const add = (minStage, angle, svg) => { if (stage >= minStage) items.push({minStage, angle, svg}); };
@@ -721,14 +738,14 @@ function planetSVG(stage, popLast = false){
   add(4, -62, bot('#ffd447')); add(5, 84, bot('#62e6e1')); add(6, -86, flowers); add(7, 14, bot('#ff7a59'));
   const top = Math.min(stage, 7);
   let s = `<svg viewBox="0 0 400 330" role="img" aria-label="Planeta M, etapa ${stage}">
-  <defs><radialGradient id="pg" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ff9cc8"/><stop offset=".45" stop-color="#e0478f"/><stop offset="1" stop-color="#7d1e4f"/></radialGradient>
-  <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset=".6" stop-color="#e0478f" stop-opacity=".35"/><stop offset="1" stop-color="#e0478f" stop-opacity="0"/></radialGradient></defs>
-  <circle cx="${cx}" cy="${cy}" r="${R+40}" fill="url(#glow)"/>`;
+  <defs><radialGradient id="${u}g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ff9cc8"/><stop offset=".45" stop-color="#e0478f"/><stop offset="1" stop-color="#7d1e4f"/></radialGradient>
+  <radialGradient id="${u}w" cx="50%" cy="50%" r="50%"><stop offset=".6" stop-color="#e0478f" stop-opacity=".35"/><stop offset="1" stop-color="#e0478f" stop-opacity="0"/></radialGradient></defs>
+  <circle cx="${cx}" cy="${cy}" r="${R+40}" fill="url(#${u}w)"/>`;
   items.forEach(it => {
     const cls = popLast && it.minStage === top ? ' class="grow"' : '';
     s += `<g transform="rotate(${it.angle} ${cx} ${cy}) translate(${cx} ${cy - R + 2})"><g${cls}>${it.svg}</g></g>`;
   });
-  s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#pg)"/>
+  s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#${u}g)"/>
   <text x="${cx}" y="${cy+34}" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="104" fill="#fff" opacity=".13">M</text>
   <circle cx="150" cy="232" r="16" fill="#000" opacity=".12"/><circle cx="252" cy="250" r="11" fill="#000" opacity=".12"/><circle cx="262" cy="160" r="8" fill="#000" opacity=".1"/><circle cx="136" cy="168" r="6" fill="#fff" opacity=".15"/>`;
   if (stage === 0) s += `<text x="${cx}" y="${cy-R-16}" text-anchor="middle" font-family="Baloo 2, sans-serif" font-size="18" fill="#b3acdf">Tu planeta crecerá aquí</text>`;
@@ -749,6 +766,12 @@ function planetSVG(stage, popLast = false){
 
 /* ================= HOME ================= */
 function pProgress(){ return SYL.filter(s => stars(s) >= 2).length; }
+/* Racha viva: cuenta si la última misión fue hoy o ayer. */
+function streakNow(){ const st = state.streak; if (!st || !st.last) return 0; const g = daysBetween(st.last, today()); return g <= 1 ? st.n : 0; }
+function streakHTML(){
+  const n = streakNow(), dots = Math.min(7, Math.max(n, 7));
+  return `<span class="streak-n">${n}</span><span class="streak-l"><b>${n === 1 ? 'día' : 'días'}</b>seguidos</span><span class="streak-dots">${Array.from({length:7}, (_, i) => `<i class="${i < Math.min(n, 7) ? 'on' : ''}"></i>`).join('')}</span>`;
+}
 function renderHome(){
   $('#homePlanet').innerHTML = planetSVG(state.sessions);
   const sleep = limitReached();
@@ -770,6 +793,8 @@ function renderHome(){
     ? ws.map(o => `<button class="word-chip" data-w="${o.w}">${wordIcon(o)}${o.w}</button>`).join('')
     : '<span class="words-empty">Las palabras que desbloquees aparecerán aquí.</span>';
   $('#wordsRow').querySelectorAll('.word-chip').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.w); });
+  const sn = streakNow();
+  $('#streak').innerHTML = sn ? `<div class="streak" aria-label="${sn} días seguidos">${streakHTML()}</div>` : '';
   const n = pProgress();
   $('#pPlanet').innerHTML = n >= 5
     ? '<div class="mini-planet">P</div><div><b>¡Planeta P desbloqueado!</b><br>Muy pronto</div>'
@@ -1407,6 +1432,9 @@ function finishSession(my){
   state.sessions++; state.last = today();
   if (state.daily.date !== today()) state.daily = {date:today(), n:0};
   state.daily.n++;
+  // Racha de días: sube un día por día con al menos una misión; si se corta, vuelve a empezar sin regaño.
+  const st = state.streak, gap = st.last ? daysBetween(st.last, today()) : null;
+  if (gap !== 0){ st.n = gap === 1 ? st.n + 1 : 1; st.last = today(); st.best = Math.max(st.best || 0, st.n); }
   const newWords = WORDS.filter(o => !state.words.includes(o.w) && Object.entries(o.need).every(([s, n]) => stars(s) >= n));
   newWords.forEach(o => state.words.push(o.w));
   const pNow = pProgress() >= 5 && !state.pSeen; if (pNow) state.pSeen = true;
@@ -1421,8 +1449,9 @@ function finishSession(my){
     html:`<h2 class="end-title">¡Misión cumplida!</h2>
       <div class="end-planet">${planetSVG(stage, stage <= 7)}</div>
       <p class="end-sub">${news}</p>
+      ${streakNow() >= 2 ? `<div class="streak">${streakHTML()}</div>` : ''}
       <div class="chips">${SYL.map(s => `<button class="syl-chip" data-s="${s}"><span class="s">${s}</span><span class="stars">${starsHTML(stars(s))}</span></button>`).join('')}</div>`,
-    say:`¡Misión cumplida! ${said} ${news}`
+    say:`¡Misión cumplida! ${said} ${news}` + (streakNow() >= 2 ? ` ¡Llevas ${streakNow()} días seguidos!` : '')
   });
   newWords.forEach(o => panels.push({
     html:`<p class="end-sub">Palabra nueva en tu planeta</p><button class="big-word" data-w="${o.w}">${wordIcon(o)}${o.w}</button><p class="end-sub">Tócala para escucharla</p>`,
@@ -1510,7 +1539,7 @@ function openAdult(){
   const races = Object.entries(state.races).sort().slice(-7);
   a.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-label="Panel del adulto">
     <h2>Panel del adulto</h2>
-    <p>Jugador: <b>${esc(curProfile().name)}</b> · Sesiones completas: <b>${state.sessions}</b> · Hoy: <b>${sessionsToday()}</b>${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
+    <p>Jugador: <b>${esc(curProfile().name)}</b> · Sesiones completas: <b>${state.sessions}</b> · Hoy: <b>${sessionsToday()}</b> · Racha: <b>${streakNow()}</b> (mejor: ${state.streak.best || 0})${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
     <table><thead><tr><th>Sílaba</th><th>Estrellas</th><th>Reconoce al oír</th><th>Lee sola</th><th>Lee &lt; 2 s</th><th>Último día</th></tr></thead>
     <tbody>${SYL.map(s => { const r = state.syl[s]; return `<tr><td>${s}</td><td style="color:#c08a00">${'★'.repeat(stars(s)) || '–'}</td><td>${r.heard}/3</td><td>${r.read}/2</td><td>${r.fast}/2</td><td>${r.last ? r.last.slice(5) : '–'}${faded(s) ? ' (apagada)' : ''}</td></tr>`; }).join('')}</tbody></table>
     <p class="muted-note">★ al reconocerla 3 veces al primer intento · ★★ al leerla sola 2 veces en la carrera (modo solo: toca el dibujo correcto sin ayuda ni error; modo juntos: tú confirmas) · ★★★ al leerla 2 veces en menos de 2 segundos.</p>
@@ -1600,6 +1629,45 @@ async function recordClip(btn){
     recBusy = false; btn.textContent = 'Sin micrófono'; setTimeout(() => { btn.textContent = 'Grabar'; }, 1800);
   }
 }
+
+/* ================= INFORMACIÓN ================= */
+function openInfo(){
+  const f = $('#info');
+  f.innerHTML = `<div class="sheet-card info-card" role="dialog" aria-modal="true" aria-label="Información de Robot Sílabo">
+    <h2>Robot Sílabo</h2>
+    <p>Juego para que niños de 5 y 6 años, con o sin TDAH, aprendan a leer sílabas en español. Debe sentirse como juego, no como clase.</p>
+    <h3>Cómo es una misión</h3>
+    <ul>
+      <li><b>Vuelo 1, Energía:</b> atrapar la sílaba que dice Sílabo y armar «m + vocal».</li>
+      <li><b>Vuelo 2, Misión del día:</b> rota entre Tablero de disparo, Asteroides, Rescate de robots y Radar de sílabas.</li>
+      <li><b>Vuelo 3, Carrera de 30 s:</b> solo (lee y toca el dibujo) o con un adulto (lee en voz alta).</li>
+      <li>Al terminar, el planeta crece, hay premio para el robot y se puede volar otra misión.</li>
+    </ul>
+    <h3>Estrellas</h3>
+    <ul><li>★ reconoce la sílaba al oírla · ★★ la lee sola · ★★★ la lee en menos de 2 segundos. Con ★★ en las cinco sílabas de la M se abre el Planeta P.</li></ul>
+    <h3>Principios para TDAH</h3>
+    <ul>
+      <li><b>Respuesta en menos de 1 segundo</b> y elogio específico por voz («¡Leíste ma!»): la espera desmotiva.</li>
+      <li><b>Sin castigo por error:</b> «¡Ups, chispa!» y se intenta otra vez; el error nunca acerca el meteorito ni quita estrellas.</li>
+      <li><b>Una meta por pantalla y audio en todo:</b> menos carga para la memoria de trabajo.</li>
+      <li><b>Final claro sin cuota diaria:</b> cada misión cierra con celebración y el niño decide si sigue, para aprovechar el hiperfoco.</li>
+      <li><b>Práctica espaciada:</b> las sílabas sin práctica en 3 días «se apagan» y vuelven en una misión de rescate.</li>
+      <li><b>Premios por misión, no por acierto,</b> y sin tiendas ni anuncios.</li>
+      <li><b>Adulto incluido:</b> jugar al lado y celebrar casi duplica el efecto de las apps de lectura.</li>
+    </ul>
+    <h3>Para el adulto</h3>
+    <ul>
+      <li>Panel del adulto: mantén presionado el engranaje ⚙. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
+      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm».</li>
+      <li>Sin Internet: en Safari, Compartir → Agregar a pantalla de inicio.</li>
+    </ul>
+    <p class="muted-note">La app complementa, no reemplaza, la evaluación de dislexia, fonoaudiología o el criterio médico.</p>
+    <p><b>Contacto:</b> <a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>
+    <div class="sheet-actions"><button class="s-btn" id="infoClose">Cerrar</button></div></div>`;
+  f.hidden = false;
+  $('#infoClose').onclick = () => { f.hidden = true; };
+}
+$('#infoBtn').onclick = () => { sfx.tap(); openInfo(); };
 
 /* ================= RESPALDO (componente común respaldo.js) ================= */
 const blobToURL = bl => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => res(null); r.readAsDataURL(bl); });

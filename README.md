@@ -31,6 +31,10 @@ Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía d
 ## Varios niños
 Cada niño tiene su propio perfil: robot, planeta, estrellas y carreras. Al abrir la app aparece "¿Quién juega?".
 
+## Información y racha
+- Botón **?** en la pantalla de inicio: qué es la app, cómo es una misión, las estrellas, los principios para TDAH, guía para el adulto y contacto.
+- **Racha de días:** cuenta los días seguidos con al menos una misión. Si se corta, vuelve a empezar sin regaño.
+
 ## Panel del adulto
 Mantén presionado el engranaje ⚙ en la pantalla de inicio. Ahí están el progreso por sílaba, los jugadores, el límite diario opcional y la **Prueba de voz**: elegir la voz del iPad, ajustar la velocidad, escuchar cada letra, sílaba y palabra, y grabar tu propia voz para las que suenen mal.
 
