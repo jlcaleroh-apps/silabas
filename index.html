@@ -461,7 +461,7 @@ function normState(d){
 }
 /* Varios niños en el mismo iPad: cada perfil guarda su propio progreso. */
 const KEY2 = 'robotSilabo.v2';
-const KID_COLORS = ['#d6daf0', '#ffd3a8', '#b6f0df', '#ffc6de', '#cfe0ff'];
+const KID_COLORS = ['#d6daf0', '#2f6fe6', '#ffd3a8', '#b6f0df', '#ffc6de', '#cfe0ff'];
 let store = {profiles:[], current:null, settings:{dailyLimit:0, rate:.88, voiceURI:null}};
 try {
   const raw2 = localStorage.getItem(KEY2);
@@ -528,6 +528,7 @@ const ACC = [
   {id:'dorado', name:'pintura dorada', color:'#f1cb73'},
   {id:'menta', name:'pintura menta', color:'#a5ebcf'},
   {id:'lila', name:'pintura lila', color:'#cdb9ff'},
+  {id:'azul', name:'pintura azul', color:'#2f6fe6'},
 ];
 const PLANET_NEWS = ['', '¡Sílabo construyó una base!', '¡Tu planeta tiene una antena!', '¡Crecieron árboles!',
   '¡Llegó un robot a vivir!', '¡Llegó otro robot!', '¡Salieron flores!', '¡Llegó otro robot!'];
