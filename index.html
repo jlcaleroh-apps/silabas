@@ -270,6 +270,43 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .big-word{font-family:var(--f-read);font-weight:700;font-size:min(96px,14vh);background:var(--magenta);color:#fff;padding:4px 36px 12px;border-radius:28px;display:inline-flex;align-items:center;gap:18px}
 .sleep-robot{width:min(200px,42vw)}
 
+/* ---------- PERFILES ---------- */
+#who{align-items:center;justify-content:center;gap:22px;text-align:center;overflow-y:auto}
+.who-title{font-size:clamp(34px,6vw,54px);font-weight:800;margin:0;line-height:1.05}
+.who-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;max-width:900px}
+.who-card{width:170px;background:var(--space-2);border:3px solid var(--space-3);border-radius:28px;padding:12px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .15s}
+.who-card:active{transform:scale(.95)}
+.who-card .robot-svg{width:110px}
+.who-name{font-size:24px;font-weight:800;line-height:1.1;overflow-wrap:anywhere}
+.who-stars{font-size:15px;color:var(--energy)}
+.who-add{justify-content:center;border-style:dashed;color:var(--muted);font-size:20px;min-height:200px}
+.who-add b{font-size:56px;line-height:1}
+.who-note{color:var(--muted);font-size:15px;margin:0}
+.top-right{display:flex;align-items:center;gap:8px}
+.kid-chip{display:flex;align-items:center;gap:8px;background:var(--space-2);border-radius:999px;padding:4px 14px 4px 4px;font-weight:700;font-size:18px;max-width:200px}
+.kid-chip .robot-svg{width:34px;height:34px}
+.kid-chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more-btn{font-weight:800;font-size:clamp(28px,4vw,38px);padding:12px 38px;border-radius:999px;background:var(--energy);color:var(--space);box-shadow:0 7px 0 #c79b1b;animation:pulse 1.8s ease-in-out infinite}
+.more-btn:active{transform:translateY(5px);box-shadow:0 2px 0 #c79b1b}
+.end-actions{display:flex;flex-direction:column;align-items:center;gap:6px}
+.happy-robot{width:min(190px,40vw)}
+.happy-robot .robot-svg{animation:float 3s ease-in-out infinite}
+.sheet-card input[type=text]{font:inherit;font-size:20px;padding:10px 12px;border-radius:12px;border:2px solid #cfc6b0;width:100%;background:#fff;color:var(--space)}
+.sheet-card select{font:inherit;font-size:16px;padding:8px;border-radius:10px;border:2px solid #cfc6b0;max-width:100%;background:#fff;color:var(--space)}
+.sheet-card input[type=range]{width:100%}
+.swatches{display:flex;gap:10px}
+.swatch{width:46px;height:46px;border-radius:50%;border:4px solid transparent}
+.swatch.on{border-color:var(--space)}
+.vt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.vt-item{display:flex;align-items:center;gap:6px;background:#f5ecd5;border-radius:12px;padding:6px 8px}
+.vt-item .vt-play{font-family:var(--f-read);font-weight:700;font-size:24px;flex:1;text-align:left;color:var(--space)}
+.vt-item .vt-rec{font-size:13px;padding:6px 8px;border-radius:9px;background:var(--space-2);color:var(--ink);white-space:nowrap}
+.vt-item .vt-rec.has{background:#3f9a4c}
+.vt-item .vt-rec.live{background:#b9334f}
+.prof-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid #e3dccb}
+.prof-row b{flex:1;min-width:120px}
+.s-btn.small{padding:6px 10px;font-size:13px}
+
 /* ---------- SHEETS ---------- */
 .sheet{position:fixed;inset:0;z-index:70;background:rgba(10,8,30,.7);display:flex;align-items:center;justify-content:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
 .sheet-card{background:var(--ink);color:var(--space);border-radius:24px;padding:20px;width:min(560px,100%);max-height:100%;overflow-y:auto;font-family:system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;gap:12px}
@@ -341,9 +378,12 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
   <section id="home" class="screen" aria-label="Planeta M">
     <header class="top">
       <div class="brand"><small>Misión sílabas</small>Robot Sílabo</div>
+      <div class="top-right">
+      <button id="kidChip" class="kid-chip" aria-label="Cambiar de jugador"></button>
       <button id="gear" class="gear" aria-label="Panel del adulto: mantén presionado">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>
       </button>
+      </div>
     </header>
     <div class="home-main">
       <div class="planet-wrap"><div id="homePlanet"></div><div class="planet-name">Planeta M</div></div>
@@ -364,6 +404,9 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
       <div class="next-planet" id="pPlanet"></div>
     </div>
   </section>
+
+  <!-- QUIÉN JUEGA -->
+  <section id="who" class="screen" hidden aria-label="Quién juega"></section>
 
   <!-- GAME -->
   <section id="game" class="screen" hidden aria-label="Misión">
@@ -388,6 +431,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 <div id="overlay" hidden></div>
 <div id="adult" class="sheet" hidden></div>
 <div id="confirm" class="sheet" hidden></div>
+<div id="form" class="sheet" hidden></div>
 
 <script>
 (() => {
@@ -403,26 +447,46 @@ const SPK = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14
 
 /* ================= STATE ================= */
 function freshSyl(){ return {heard:0, read:0, fast:0, miss:0, last:null}; }
-function freshState(){
-  return {v:1, sessions:0, last:null, dayShift:0,
+function freshState(color = null){
+  return {v:2, sessions:0, last:null, dayShift:0,
     syl:Object.fromEntries(SYL.map(s => [s, freshSyl()])),
-    words:[], owned:[], color:null, races:{}, pSeen:false};
+    words:[], owned:[], color, races:{}, raceLog:[], daily:{date:null, n:0}, pSeen:false};
 }
-let state = freshState();
+function normState(d){
+  const s = Object.assign(freshState(), d || {});
+  s.syl = Object.fromEntries(SYL.map(k => [k, Object.assign(freshSyl(), ((d || {}).syl || {})[k] || {})]));
+  if (!Array.isArray(s.raceLog)) s.raceLog = Object.entries(s.races || {}).sort().map(([date, count]) => ({date, count}));
+  if (!s.daily) s.daily = {date:null, n:0};
+  return s;
+}
+/* Varios niños en el mismo iPad: cada perfil guarda su propio progreso. */
+const KEY2 = 'robotSilabo.v2';
+const KID_COLORS = ['#d6daf0', '#ffd3a8', '#b6f0df', '#ffc6de', '#cfe0ff'];
+let store = {profiles:[], current:null, settings:{dailyLimit:0, rate:.88, voiceURI:null}};
 try {
-  const raw = localStorage.getItem(KEY);
-  if (raw) {
-    const d = JSON.parse(raw);
-    state = Object.assign(freshState(), d);
-    state.syl = Object.fromEntries(SYL.map(s => [s, Object.assign(freshSyl(), (d.syl || {})[s] || {})]));
-  }
+  const raw2 = localStorage.getItem(KEY2);
+  if (raw2) { const d = JSON.parse(raw2); store = Object.assign(store, d); store.settings = Object.assign({dailyLimit:0, rate:.88, voiceURI:null}, d.settings || {}); }
+  else { const raw = localStorage.getItem(KEY); if (raw) store.profiles.push({id:'p1', name:'Explorador', state:JSON.parse(raw)}); }
 } catch (e) {}
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+store.profiles.forEach(p => { p.state = normState(p.state); });
+if (!store.profiles.length) store.profiles.push({id:'p1', name:'Explorador', state:freshState()});
+if (!store.profiles.find(p => p.id === store.current)) store.current = store.profiles[0].id;
+const curProfile = () => store.profiles.find(p => p.id === store.current);
+let state = curProfile().state;
+function save(){ const p = curProfile(); if (p) p.state = state; try { localStorage.setItem(KEY2, JSON.stringify(store)); } catch (e) {} }
+save();
+function selectProfile(id){ save(); store.current = id; state = curProfile().state; save(); }
+function addProfile(name, color){
+  const id = 'p' + Date.now().toString(36);
+  store.profiles.push({id, name, state:freshState(color)}); save(); return id;
+}
 
 function dstr(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function today(){ return dstr(new Date(Date.now() + (state.dayShift||0)*DAY)); }
 function daysBetween(a,b){ return Math.round((new Date(b+'T12:00:00') - new Date(a+'T12:00:00'))/DAY); }
-function playedToday(){ return state.last === today(); }
+function sessionsToday(){ return state.daily.date === today() ? state.daily.n : 0; }
+/* Sin cuota fija: solo hay límite si el adulto lo activa en el panel. */
+function limitReached(){ const L = store.settings.dailyLimit; return L > 0 && sessionsToday() >= L; }
 
 function stars(s){
   const r = state.syl[s]; let n = 0;
@@ -474,6 +538,7 @@ function pickVoice(){
   if (!('speechSynthesis' in window)) return null;
   const vs = speechSynthesis.getVoices(); if (!vs.length) return null;
   const norm = v => v.lang.replace('_','-').toLowerCase();
+  if (store.settings.voiceURI){ const v = vs.find(v => v.voiceURI === store.settings.voiceURI); if (v) return v; }
   const pref = ['es-mx','es-us','es-419','es-co','es-ar','es-cl','es-es'];
   for (const p of pref) {
     const c = vs.filter(v => norm(v) === p);
@@ -483,6 +548,7 @@ function pickVoice(){
 }
 if ('speechSynthesis' in window) { voice = pickVoice(); speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); }; }
 function speak(text, rate = .88){
+  rate = Math.max(.5, Math.min(1.3, rate * (store.settings.rate / .88)));
   return new Promise(res => {
     const say = $('#sayAgain'); say && say.classList.add('talking');
     let done = false;
@@ -529,12 +595,47 @@ const sfx = {
   pop(){ tone(300,.12,'sine',.18,0,900); },
 };
 
+/* ---- Voz grabada por el adulto (respaldo si la voz del iPad pronuncia mal) ---- */
+const clips = {};          // texto -> Blob
+let idb = null;
+function idbOpen(){
+  return new Promise(res => {
+    try { const r = indexedDB.open('robotSilaboVoz', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('clips');
+      r.onsuccess = () => { idb = r.result; res(idb); }; r.onerror = () => res(null);
+    } catch (e) { res(null); }
+  });
+}
+async function loadClips(){
+  const db = await idbOpen(); if (!db) return;
+  try { const tx = db.transaction('clips'), st = tx.objectStore('clips'), rq = st.openCursor();
+    rq.onsuccess = () => { const c = rq.result; if (c){ clips[c.key] = c.value; c.continue(); } };
+  } catch (e) {}
+}
+function saveClip(key, blob){ clips[key] = blob; try { idb && idb.transaction('clips','readwrite').objectStore('clips').put(blob, key); } catch (e) {} }
+function deleteClip(key){ delete clips[key]; try { idb && idb.transaction('clips','readwrite').objectStore('clips').delete(key); } catch (e) {} }
+loadClips();
+const sayOfUnit = x => x === 'm' ? 'mmm' : x;
+/* Una letra, sílaba o palabra sola: usa la grabación si existe; si no, la voz del iPad. */
+function sayUnit(x, rate = .82){
+  const blob = clips[x];
+  if (!blob) return speak(sayOfUnit(x), rate);
+  return new Promise(res => {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    const url = URL.createObjectURL(blob), a = new Audio(url);
+    const fin = () => { URL.revokeObjectURL(url); res(); };
+    a.onended = fin; a.onerror = () => { fin(); };
+    a.play().catch(() => { fin(); speak(sayOfUnit(x), rate); });
+    setTimeout(res, 4000);
+  });
+}
+
 /* ================= HELPERS ================= */
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const sample = (a, n) => shuffle(a).slice(0, n);
 function joinY(list){ if (list.length <= 1) return list.join(''); return list.slice(0,-1).join(', ') + ' y ' + list[list.length-1]; }
-function show(id){ ['home','game','end'].forEach(s => { $('#'+s).hidden = s !== id; }); }
+function show(id){ ['home','game','end','who'].forEach(s => { const el = $('#'+s); if (el) el.hidden = s !== id; }); }
 let wakeLock = null;
 async function wake(){ try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
 
@@ -624,22 +725,25 @@ function planetSVG(stage, popLast = false){
 function pProgress(){ return SYL.filter(s => stars(s) >= 2).length; }
 function renderHome(){
   $('#homePlanet').innerHTML = planetSVG(state.sessions);
-  const sleep = playedToday();
+  const sleep = limitReached();
+  const kid = curProfile();
+  $('#kidChip').innerHTML = `${robotSVG({mood:'happy'})}<span>${esc(kid.name)}</span>`;
+  $('#kidChip').hidden = store.profiles.length < 2;
   $('#homeRobot').innerHTML = robotSVG({mood: sleep ? 'sleep' : 'happy'});
   $('#homeCta').innerHTML = sleep
-    ? '<div class="recharge"><div class="battery"><i></i></div><p>Sílabo está recargando.<b>¡Vuelve mañana!</b></p></div>'
+    ? '<div class="recharge"><div class="battery"><i></i></div><p>Misiones de hoy completas.<b>¡Vuelve mañana!</b></p></div>'
     : '<button class="play-btn" id="playBtn">¡A la misión!</button>';
   const pb = $('#playBtn'); if (pb) pb.onclick = startSession;
   $('#sylRow').innerHTML = SYL.map(s => `<button class="syl-chip${faded(s)?' off':''}" data-s="${s}" aria-label="${s}, ${stars(s)} estrellas"><span class="s">${s}</span><span class="stars">${starsHTML(stars(s))}</span></button>`).join('');
   $('#sylRow').querySelectorAll('.syl-chip').forEach(b => b.onclick = () => {
     sfx.tap(); const s = b.dataset.s;
-    speak(faded(s) ? `${s}. ¡La sílaba ${s} se apagó! Rescátala en la próxima misión.` : s);
+    if (faded(s)) speak(`${s}. ¡La sílaba ${s} se apagó! Rescátala en la próxima misión.`); else sayUnit(s);
   });
   const ws = WORDS.filter(o => state.words.includes(o.w));
   $('#wordsRow').innerHTML = ws.length
     ? ws.map(o => `<button class="word-chip" data-w="${o.w}">${wordIcon(o)}${o.w}</button>`).join('')
     : '<span class="words-empty">Las palabras que desbloquees aparecerán aquí.</span>';
-  $('#wordsRow').querySelectorAll('.word-chip').forEach(b => b.onclick = () => { sfx.tap(); speak(b.dataset.w); });
+  $('#wordsRow').querySelectorAll('.word-chip').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.w); });
   const n = pProgress();
   $('#pPlanet').innerHTML = n >= 5
     ? '<div class="mini-planet">P</div><div><b>¡Planeta P desbloqueado!</b><br>Muy pronto</div>'
@@ -647,7 +751,48 @@ function renderHome(){
 }
 $('#homeRobot').onclick = () => {
   sfx.tap();
-  speak(playedToday() ? 'Estoy recargando mi batería. ¡Vuelve mañana y volamos juntos!' : '¡Hola! Soy Sílabo. Mi nave necesita energía de sílabas. ¿Me ayudas?');
+  speak(limitReached() ? 'Ya terminamos las misiones de hoy. ¡Vuelve mañana y volamos juntos!' : `¡Hola, ${curProfile().name}! Soy Sílabo. Mi nave necesita energía de sílabas. ¿Me ayudas?`);
+};
+$('#kidChip').onclick = () => { sfx.tap(); renderWho(); };
+function esc(t){ return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function show2(id){ ['home','game','end','who'].forEach(s => { $('#'+s).hidden = s !== id; }); }
+/* ---------- ¿Quién juega? ---------- */
+function renderWho(){
+  const w = $('#who');
+  w.innerHTML = `<h2 class="who-title">¿Quién juega?</h2>
+    <div class="who-grid">${store.profiles.map(p => {
+      const n = SYL.reduce((a, s) => a + (p.state.syl[s].heard >= 3 ? 1 : 0), 0);
+      return `<button class="who-card" data-id="${p.id}">${robotSVG({acc:p.state.owned, color:p.state.color})}<span class="who-name">${esc(p.name)}</span><span class="who-stars">${n} de 5 sílabas con ★</span></button>`;
+    }).join('')}
+    <button class="who-card who-add" id="whoAdd"><b>+</b>Nuevo jugador</button></div>
+    <p class="who-note">Cada niño tiene su propio robot, su planeta y sus estrellas.</p>`;
+  show2('who');
+  w.querySelectorAll('[data-id]').forEach(b => b.onclick = () => {
+    selectProfile(b.dataset.id); sfx.good(); renderHome(); show2('home');
+    speak(`¡Hola, ${curProfile().name}! ¡A la misión!`);
+  });
+  $('#whoAdd').onclick = () => profileForm(null, () => renderWho());
+}
+function profileForm(id, done){
+  const f = $('#form'); const p = id ? store.profiles.find(x => x.id === id) : null;
+  let color = p ? (p.state.color || KID_COLORS[0]) : KID_COLORS[store.profiles.length % KID_COLORS.length];
+  f.innerHTML = `<form class="sheet-card" id="pf" role="dialog" aria-modal="true">
+    <h2>${p ? 'Cambiar nombre' : 'Nuevo jugador'}</h2>
+    <p class="muted-note">Para el adulto: escribe el nombre del niño.</p>
+    <input type="text" id="pfName" maxlength="20" autocomplete="off" placeholder="Nombre" value="${p ? esc(p.name) : ''}" required>
+    <p>Color del robot</p>
+    <div class="swatches">${KID_COLORS.map(c => `<button type="button" class="swatch${c === color ? ' on' : ''}" data-c="${c}" style="background:${c}" aria-label="Color"></button>`).join('')}</div>
+    <div class="sheet-actions"><button class="s-btn" type="submit">Guardar</button><button class="s-btn light" type="button" id="pfCancel">Cancelar</button></div></form>`;
+  f.hidden = false;
+  f.querySelectorAll('.swatch').forEach(s => s.onclick = () => { color = s.dataset.c; f.querySelectorAll('.swatch').forEach(x => x.classList.toggle('on', x === s)); });
+  $('#pfCancel').onclick = () => { f.hidden = true; };
+  $('#pf').onsubmit = e => {
+    e.preventDefault(); const name = $('#pfName').value.trim(); if (!name) return;
+    if (p){ p.name = name; p.state.color = color; if (p.id === store.current) state = p.state; save(); }
+    else addProfile(name, color);
+    f.hidden = true; done && done();
+  };
+  setTimeout(() => { try { $('#pfName').focus(); } catch (e) {} }, 50);
 };
 
 /* ================= SESSION ================= */
@@ -930,14 +1075,14 @@ function assembleRound(my, target){
         if (done) return;
         const isC = tile.dataset.l === 'm'; const sock = isC ? sockC : sockV;
         if (!moved){
-          speak(sound(tile.dataset.l));
+          sayUnit(tile.dataset.l);
           if (tile.parentElement === sock) return;
           if (!isC && placedV) sendBack(placedV);
           place(tile, sock); return;
         }
         const r = sock.getBoundingClientRect();
         const inside = e.clientX > r.left - 30 && e.clientX < r.right + 30 && e.clientY > r.top - 30 && e.clientY < r.bottom + 30;
-        if (inside && tile.parentElement !== sock){ if (!isC && placedV) sendBack(placedV); place(tile, sock); speak(sound(tile.dataset.l)); }
+        if (inside && tile.parentElement !== sock){ if (!isC && placedV) sendBack(placedV); place(tile, sock); sayUnit(tile.dataset.l); }
         else { tile.classList.add('back'); tile.style.transform = ''; setTimeout(() => tile.classList.remove('back'), 320); }
       };
       tile.addEventListener('pointerup', end); tile.addEventListener('pointercancel', end);
@@ -1058,9 +1203,12 @@ function radarRound(my, used){
 
 /* ---------- vuelo 3: carrera contra el cohete de ayer ---------- */
 function ghostInfo(){
-  const t = today(); const keys = Object.keys(state.races).filter(k => k < t).sort();
-  if (!keys.length) return {count:6, real:false};
-  return {count: state.races[keys[keys.length-1]], real:true, day:keys[keys.length-1]};
+  const log = state.raceLog;
+  if (!log.length) return {count:6, real:false, label:'Práctica', said:''};
+  const last = log[log.length-1], d = daysBetween(last.date, today());
+  const label = d === 0 ? 'Antes' : d === 1 ? 'Ayer' : 'La última';
+  const said = d === 0 ? 'tu cohete de antes' : d === 1 ? 'tu cohete de ayer' : 'tu cohete de la última vez';
+  return {count:last.count, real:true, label, said};
 }
 function flightRace(my){
   return new Promise(resolve => {
@@ -1072,7 +1220,7 @@ function flightRace(my){
       <p class="adult-note"><b>Adulto:</b> durante 30 segundos aparece una sílaba. Cuando el niño la lea en voz alta, toca <b>✓ ¡La leyó!</b> Si necesita ayuda, toca la bocina: la sílaba suena y cuenta como práctica.</p>
       <button class="big-btn" id="raceGo">¡Listos!</button>
       <button class="link-btn" id="raceSkip">Hoy sin carrera</button></div>`;
-    prompt(my, g.real ? '¡Carrera! Lee en voz alta cada sílaba. Tu cohete de ayer te espera.' : '¡Carrera! Lee en voz alta cada sílaba, tan rápido como puedas.');
+    prompt(my, g.real ? `¡Carrera! Lee en voz alta cada sílaba. ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : '¡Carrera! Lee en voz alta cada sílaba, tan rápido como puedas.');
     $('#raceSkip').onclick = () => { my.cells = 5; renderEnergy(); resolve(); };
     $('#raceGo').onclick = async () => {
       await countdown(my, false);
@@ -1086,7 +1234,7 @@ function runRace(my, g, resolve){
   stage.innerHTML = `<div class="race">
     <div class="track">
       <div class="lane"><span class="lane-label">Hoy</span><div class="rocket" id="rMe">${MINI_ROCKET('#eef0fb')}</div></div>
-      <div class="lane ghost"><span class="lane-label">${g.real ? 'Ayer' : 'Práctica'}</span><div class="rocket" id="rGhost">${MINI_ROCKET('#b3acdf')}</div></div>
+      <div class="lane ghost"><span class="lane-label">${g.label}</span><div class="rocket" id="rGhost">${MINI_ROCKET('#b3acdf')}</div></div>
     </div>
     <div class="timebar"><i id="tFill"></i></div>
     <div style="position:relative"><span class="praise-flash" id="pflash"></span><div class="card" id="rCard"></div></div>
@@ -1121,24 +1269,26 @@ function runRace(my, g, resolve){
     my.cells = Math.min(5, Math.ceil(count/2)); renderEnergy();
     nextCard();
   };
-  $('#rHelp').onclick = () => { if (over) return; helped = true; speak(cur, .8); };
+  $('#rHelp').onclick = () => { if (over) return; helped = true; sayUnit(cur); };
   my.cleanup = () => cancelAnimationFrame(raf);
   nextCard(); raf = requestAnimationFrame(frame);
   async function finish(){
     over = true; cancelAnimationFrame(raf);
-    const t = today(); const prevBest = Math.max(0, ...Object.entries(state.races).filter(([k]) => k !== t).map(([,v]) => v));
-    state.races[t] = Math.max(state.races[t] || 0, count); save();
+    const t = today(); const prevBest = Math.max(0, ...state.raceLog.map(r => r.count));
+    state.races[t] = Math.max(state.races[t] || 0, count);
+    state.raceLog.push({date:t, count}); if (state.raceLog.length > 60) state.raceLog.splice(0, state.raceLog.length - 60);
+    save();
     const beatGhost = g.real && count > g.count, record = count > prevBest && prevBest > 0;
     my.race = {count, ghost:g};
     my.cells = 5; renderEnergy();
     stage.innerHTML = `<div class="race-end">
       ${record ? '<span class="badge-new">¡Nuevo récord!</span>' : ''}
       <p class="record">Hoy <span>${count} sílabas</span> en 30 segundos</p>
-      <p class="record-sub">${g.real ? `Ayer: ${g.count}` : 'Tu primera carrera. ¡Mañana tu cohete de hoy te espera!'}</p>
+      <p class="record-sub">${g.real ? `${g.label}: ${g.count}` : 'Tu primera carrera. ¡La próxima vez tu cohete de hoy te espera!'}</p>
       <button class="big-btn" id="raceDone">¡Despegar!</button></div>`;
     if (record || beatGhost) sfx.fanfare(); else sfx.good();
     setBubble('¡Qué carrera!');
-    const msg = `¡Hoy ${count} sílabas en 30 segundos!` + (g.real ? ` Ayer ${g.count}.` : '') + (beatGhost ? ' ¡Le ganaste a tu cohete de ayer!' : count > 0 ? ' ¡Cada día tu cohete va más rápido!' : '');
+    const msg = `¡Hoy ${count} sílabas en 30 segundos!` + (g.real ? ` ${g.label === 'La última' ? 'La última vez' : g.label} ${g.count}.` : '') + (beatGhost ? ` ¡Le ganaste a ${g.said}!` : count > 0 ? ' ¡Tu cohete va cada vez más rápido!' : '');
     prompt(my, msg);
     $('#raceDone').onclick = () => resolve();
   }
@@ -1179,6 +1329,8 @@ async function launch(my){
 function finishSession(my){
   my.alive = false; S = null;
   state.sessions++; state.last = today();
+  if (state.daily.date !== today()) state.daily = {date:today(), n:0};
+  state.daily.n++;
   const newWords = WORDS.filter(o => !state.words.includes(o.w) && Object.entries(o.need).every(([s, n]) => stars(s) >= n));
   newWords.forEach(o => state.words.push(o.w));
   const pNow = pProgress() >= 5 && !state.pSeen; if (pNow) state.pSeen = true;
@@ -1205,21 +1357,31 @@ function finishSession(my){
     say:'¡Increíble! Leíste las cinco sílabas de la M. ¡Desbloqueaste el planeta P!'
   });
   panels.push({reward:true});
-  panels.push({
-    html:`<div class="sleep-robot">${robotSVG({mood:'sleep'})}</div><div class="recharge"><div class="battery"><i></i></div><p>Sílabo necesita recargar.<b>¡Vuelve mañana!</b></p></div>`,
-    say:'Sílabo necesita recargar. ¡Vuelve mañana!', last:true
-  });
+  panels.push(limitReached() ? {
+    html:`<div class="sleep-robot">${robotSVG({mood:'sleep'})}</div><div class="recharge"><div class="battery"><i></i></div><p>Misiones de hoy completas.<b>¡Vuelve mañana!</b></p></div>`,
+    say:'¡Terminamos las misiones de hoy! Vuelve mañana.', last:true
+  } : {final:true});
   let i = 0;
   const endEl = $('#end');
   function render(){
     const p = panels[i];
     if (p.reward) return renderReward();
+    if (p.final) return renderMore();
     endEl.innerHTML = `<div class="end-panel">${p.html}<button class="next-btn" id="endNext">${p.last ? 'Ir a mi planeta' : 'Siguiente'} <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l10 7-10 7z"/></svg></button></div>`;
-    endEl.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { sfx.tap(); speak(b.dataset.s); });
-    endEl.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { sfx.tap(); speak(b.dataset.w); });
+    endEl.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.s); });
+    endEl.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.w); });
     if (i === 0) sfx.fanfare();
     speak(p.say);
     $('#endNext').onclick = () => { sfx.tap(); if (p.last){ renderHome(); show('home'); try { wakeLock && wakeLock.release(); } catch (e) {} } else { i++; render(); } };
+  }
+  function renderMore(){
+    endEl.innerHTML = `<div class="end-panel"><div class="happy-robot">${robotSVG()}</div>
+      <h2 class="end-title">¡Sílabo tiene energía para más!</h2>
+      <div class="end-actions"><button class="more-btn" id="moreGo">¡Otra misión!</button>
+      <button class="link-btn" id="moreStop">Terminar por ahora</button></div></div>`;
+    speak('¡Mi nave tiene energía para más! ¿Volamos a otra misión?');
+    $('#moreGo').onclick = () => startSession();
+    $('#moreStop').onclick = () => { sfx.tap(); speak('¡Gracias por ayudarme! Aquí te espero.'); renderHome(); show('home'); try { wakeLock && wakeLock.release(); } catch (e) {} };
   }
   function renderReward(){
     let opts = ACC.filter(a => !state.owned.includes(a.id) && !a.color);
@@ -1272,27 +1434,97 @@ function openAdult(){
   const races = Object.entries(state.races).sort().slice(-7);
   a.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-label="Panel del adulto">
     <h2>Panel del adulto</h2>
-    <p>Sesiones completas: <b>${state.sessions}</b>${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
+    <p>Jugador: <b>${esc(curProfile().name)}</b> · Sesiones completas: <b>${state.sessions}</b> · Hoy: <b>${sessionsToday()}</b>${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
     <table><thead><tr><th>Sílaba</th><th>Estrellas</th><th>Reconoce al oír</th><th>Lee sola</th><th>Lee &lt; 2 s</th><th>Último día</th></tr></thead>
     <tbody>${SYL.map(s => { const r = state.syl[s]; return `<tr><td>${s}</td><td style="color:#c08a00">${'★'.repeat(stars(s)) || '–'}</td><td>${r.heard}/3</td><td>${r.read}/2</td><td>${r.fast}/2</td><td>${r.last ? r.last.slice(5) : '–'}${faded(s) ? ' (apagada)' : ''}</td></tr>`; }).join('')}</tbody></table>
     <p class="muted-note">★ al reconocerla 3 veces al primer intento · ★★ al leerla sola 2 veces en la carrera · ★★★ al leerla 2 veces en menos de 2 segundos (incluye tu toque).</p>
-    <p><b>Carreras de 30 s:</b> ${races.length ? races.map(([d,v]) => `${d.slice(5)}: ${v}`).join(' · ') : 'todavía ninguna'}</p>
+    <p><b>Carreras de 30 s (mejor por día):</b> ${races.length ? races.map(([d,v]) => `${d.slice(5)}: ${v}`).join(' · ') : 'todavía ninguna'}</p>
+    <p><b>Límite de misiones por día</b> <span class="muted-note">(sin límite = aprovechar el hiperfoco)</span><br>
+      <select id="aLimit">${[0,1,2,3,5].map(n => `<option value="${n}"${store.settings.dailyLimit === n ? ' selected' : ''}>${n ? n + ' por día' : 'Sin límite'}</option>`).join('')}</select></p>
+    <div><b>Jugadores</b>${store.profiles.map(p => `<div class="prof-row"><b>${esc(p.name)}${p.id === store.current ? ' (jugando)' : ''}</b>
+      ${p.id !== store.current ? `<button class="s-btn small light" data-use="${p.id}">Jugar con este</button>` : ''}
+      <button class="s-btn small light" data-ren="${p.id}">Cambiar nombre</button>
+      ${store.profiles.length > 1 ? `<button class="s-btn small danger" data-del="${p.id}">Borrar</button>` : ''}</div>`).join('')}
+      <div class="sheet-actions" style="margin-top:8px"><button class="s-btn" id="aAdd">Agregar jugador</button></div></div>
     <p class="tip"><b>Fuera de la pantalla hoy:</b> busquen juntos cosas que empiecen con «mmm»: mamá, mano, mesa, mono, moto. Celebren cada una.</p>
     <div class="sheet-actions">
-      <button class="s-btn" id="aAgain">Otra sesión hoy</button>
+      <button class="s-btn" id="aVoice">Prueba de voz</button>
       <button class="s-btn" id="aDay">Probar: avanzar un día</button>
-      <button class="s-btn danger" id="aReset">Borrar progreso</button>
+      <button class="s-btn danger" id="aReset">Borrar progreso de ${esc(curProfile().name)}</button>
       <button class="s-btn light" id="aClose">Cerrar</button>
     </div></div>`;
   a.hidden = false;
   $('#aClose').onclick = () => { a.hidden = true; };
-  $('#aAgain').onclick = () => { state.last = null; save(); a.hidden = true; renderHome(); };
+  $('#aLimit').onchange = e => { store.settings.dailyLimit = +e.target.value; save(); renderHome(); };
+  $('#aVoice').onclick = () => { a.hidden = true; openVoice(); };
+  $('#aAdd').onclick = () => profileForm(null, () => { renderHome(); openAdult(); });
+  a.querySelectorAll('[data-use]').forEach(b => b.onclick = () => { selectProfile(b.dataset.use); renderHome(); openAdult(); });
+  a.querySelectorAll('[data-ren]').forEach(b => b.onclick = () => profileForm(b.dataset.ren, () => { renderHome(); openAdult(); }));
+  a.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    const p = store.profiles.find(x => x.id === b.dataset.del);
+    a.hidden = true;
+    confirmBox(`¿Borrar a ${esc(p.name)} y todo su progreso?`, 'Borrar', 'Cancelar', () => {
+      store.profiles = store.profiles.filter(x => x.id !== p.id); save(); renderHome(); openAdult();
+    });
+  });
   $('#aDay').onclick = () => { state.dayShift = (state.dayShift||0) + 1; save(); renderHome(); openAdult(); };
-  $('#aReset').onclick = () => { a.hidden = true; confirmBox('¿Borrar todo el progreso de este iPad?', 'Borrar todo', 'Cancelar', () => { state = freshState(); save(); renderHome(); }); };
+  $('#aReset').onclick = () => { a.hidden = true; confirmBox(`¿Borrar todo el progreso de ${esc(curProfile().name)}?`, 'Borrar', 'Cancelar', () => { state = freshState(state.color); save(); renderHome(); }); };
+}
+
+/* ---------- Prueba de voz ---------- */
+const VT_ITEMS = [...VOW, 'm', ...SYL, ...SIGHT_WORDS()];
+function SIGHT_WORDS(){ return ['mamá','mimo','mesa','mano','mono','mamut']; }
+function openVoice(){
+  const f = $('#form');
+  const vs = ('speechSynthesis' in window) ? speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('es')) : [];
+  const canRec = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+  f.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-label="Prueba de voz">
+    <h2>Prueba de voz</h2>
+    <p>Toca cada letra, sílaba y palabra. Si alguna suena mal (por ejemplo, la voz deletrea «eme a» en vez de «ma»), prueba otra voz o grábala con tu propia voz.</p>
+    <p><b>Voz</b><br><select id="vtVoice"><option value="">Automática (español latino)</option>${vs.map(v => `<option value="${esc(v.voiceURI)}"${store.settings.voiceURI === v.voiceURI ? ' selected' : ''}>${esc(v.name)} · ${esc(v.lang)}</option>`).join('')}</select>
+    ${vs.length ? '' : '<br><span class="muted-note">No encontré voces en español en este dispositivo. En el iPad: Ajustes → Accesibilidad → Contenido leído → Voces → Español.</span>'}</p>
+    <p><b>Velocidad</b> <span id="vtRateV"></span><br><input type="range" id="vtRate" min="0.6" max="1.1" step="0.02" value="${store.settings.rate}"></p>
+    <p><button class="s-btn light" id="vtSentence">Oír una frase de Sílabo</button></p>
+    <div class="vt-grid">${VT_ITEMS.map(x => `<div class="vt-item"><button class="vt-play" data-x="${x}">${x}</button>${canRec ? `<button class="vt-rec${clips[x] ? ' has' : ''}" data-r="${x}">${clips[x] ? 'Mi voz ✓' : 'Grabar'}</button>` : ''}</div>`).join('')}</div>
+    <p class="muted-note">${canRec ? 'Grabar: toca, di la sílaba en 2 segundos y listo. Si ya existe, toca para borrarla. Las grabaciones se usan en lugar de la voz del iPad.' : 'La grabación funciona en la app publicada (GitHub Pages) en el iPad; aquí el micrófono no está disponible.'}</p>
+    <div class="sheet-actions"><button class="s-btn light" id="vtClose">Cerrar</button></div></div>`;
+  f.hidden = false;
+  const showRate = () => { $('#vtRateV').textContent = (+store.settings.rate).toFixed(2); };
+  showRate();
+  $('#vtVoice').onchange = e => { store.settings.voiceURI = e.target.value || null; save(); voice = pickVoice(); sayUnit('ma'); };
+  $('#vtRate').oninput = e => { store.settings.rate = +e.target.value; showRate(); };
+  $('#vtRate').onchange = () => { save(); sayUnit('mo'); };
+  $('#vtSentence').onclick = () => speak('¡Necesito mi! ¡Encontraste mi!');
+  f.querySelectorAll('.vt-play').forEach(b => b.onclick = () => sayUnit(b.dataset.x));
+  f.querySelectorAll('.vt-rec').forEach(b => b.onclick = () => recordClip(b));
+  $('#vtClose').onclick = () => { f.hidden = true; };
+}
+let recBusy = false;
+async function recordClip(btn){
+  const x = btn.dataset.r;
+  if (clips[x]){ deleteClip(x); btn.classList.remove('has'); btn.textContent = 'Grabar'; return; }
+  if (recBusy) return; recBusy = true;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    const rec = new MediaRecorder(stream), parts = [];
+    rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+    rec.onstop = () => {
+      stream.getTracks().forEach(t => t.stop()); recBusy = false;
+      if (!parts.length){ btn.textContent = 'Grabar'; btn.classList.remove('live'); return; }
+      saveClip(x, new Blob(parts, {type: rec.mimeType || 'audio/mp4'}));
+      btn.classList.remove('live'); btn.classList.add('has'); btn.textContent = 'Mi voz ✓';
+      setTimeout(() => sayUnit(x), 150);
+    };
+    btn.classList.add('live'); btn.textContent = 'Hablando…';
+    rec.start(); setTimeout(() => { try { rec.stop(); } catch (e) {} }, 1800);
+  } catch (e) {
+    recBusy = false; btn.textContent = 'Sin micrófono'; setTimeout(() => { btn.textContent = 'Grabar'; }, 1800);
+  }
 }
 
 /* ================= INICIO ================= */
-renderHome(); show('home');
+renderHome();
+if (store.profiles.length > 1) renderWho(); else show('home');
 })();
 </script>
 

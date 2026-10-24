@@ -12,9 +12,10 @@ Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía d
 2. **Vuelo 1, Energía:** atrapar cristales con la sílaba que dice Sílabo y armar "m + vocal".
 3. **Vuelo 2, Misión del día** (rota): Tablero de disparo, Lluvia de asteroides, Rescate de robots o Radar de sílabas.
 4. **Vuelo 3, Carrera de 30 s** contra el cohete de ayer (modo juntos: el adulto toca ✓ cuando el niño lee).
-5. Despegue, el planeta crece, premio para el robot y "Sílabo necesita recargar. ¡Vuelve mañana!".
+5. Despegue, el planeta crece y premio para el robot. Después, "¡Otra misión!" o "Terminar por ahora": no hay cuota diaria fija, para aprovechar el hiperfoco (el adulto puede poner un límite opcional).
 
 ## Progreso
+- La carrera compara con tu carrera anterior (cohete fantasma).
 - ⭐ reconoce la sílaba al escucharla · ⭐⭐ la lee sola · ⭐⭐⭐ la lee en menos de 2 s.
 - El planeta crece con cada sesión; las palabras desbloqueadas aparecen como objetos del planeta.
 - Las sílabas sin práctica en 3 días "se apagan" y un robot pide rescate.
@@ -27,8 +28,11 @@ Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía d
 - Premios por sesión, no por acierto.
 - El progreso se guarda en el iPad (almacenamiento local del navegador).
 
+## Varios niños
+Cada niño tiene su propio perfil: robot, planeta, estrellas y carreras. Al abrir la app aparece "¿Quién juega?".
+
 ## Panel del adulto
-Mantén presionado el engranaje ⚙ en la pantalla de inicio.
+Mantén presionado el engranaje ⚙ en la pantalla de inicio. Ahí están el progreso por sílaba, los jugadores, el límite diario opcional y la **Prueba de voz**: elegir la voz del iPad, ajustar la velocidad, escuchar cada letra, sílaba y palabra, y grabar tu propia voz para las que suenen mal.
 
 ## Técnica
 Una sola página (`index.html`) con HTML, CSS y JavaScript. Voz con la síntesis de voz del iPad en español.
