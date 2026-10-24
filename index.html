@@ -1529,7 +1529,8 @@ function openAdult(){
       <button class="s-btn" id="aDay">Probar: avanzar un día</button>
       <button class="s-btn danger" id="aReset">Borrar progreso de ${esc(curProfile().name)}</button>
       <button class="s-btn light" id="aClose">Cerrar</button>
-    </div></div>`;
+    </div>
+    <p class="muted-note">Robot Sílabo · Contacto: <a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p></div>`;
   a.hidden = false;
   if (window.Respaldo) Respaldo.montar($('#aRespaldo'));
   $('#aClose').onclick = () => { a.hidden = true; };
