@@ -2,8 +2,8 @@
 // Página: primero la red (para recibir mejoras); si no hay internet, la copia guardada.
 // Íconos y fuentes: primero la copia guardada, y se refrescan en segundo plano.
 // Al publicar un cambio grande, sube el número de CACHE para limpiar la copia vieja.
-const CACHE = 'silabo-v1';
-const CORE = ['./', './index.html', './manifest.webmanifest',
+const CACHE = 'silabo-v2';
+const CORE = ['./', './index.html', './manifest.webmanifest', './respaldo.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-512-maskable.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

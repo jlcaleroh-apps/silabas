@@ -457,6 +457,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 <div id="confirm" class="sheet" hidden></div>
 <div id="form" class="sheet" hidden></div>
 
+<script src="respaldo.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1521,6 +1522,7 @@ function openAdult(){
       <button class="s-btn small light" data-ren="${p.id}">Cambiar nombre</button>
       ${store.profiles.length > 1 ? `<button class="s-btn small danger" data-del="${p.id}">Borrar</button>` : ''}</div>`).join('')}
       <div class="sheet-actions" style="margin-top:8px"><button class="s-btn" id="aAdd">Agregar jugador</button></div></div>
+    <div id="aRespaldo"></div>
     <p class="tip"><b>Fuera de la pantalla hoy:</b> busquen juntos cosas que empiecen con «mmm»: mamá, mano, mesa, mono, moto. Celebren cada una.</p>
     <div class="sheet-actions">
       <button class="s-btn" id="aVoice">Prueba de voz</button>
@@ -1529,6 +1531,7 @@ function openAdult(){
       <button class="s-btn light" id="aClose">Cerrar</button>
     </div></div>`;
   a.hidden = false;
+  if (window.Respaldo) Respaldo.montar($('#aRespaldo'));
   $('#aClose').onclick = () => { a.hidden = true; };
   $('#aLimit').onchange = e => { store.settings.dailyLimit = +e.target.value; save(); renderHome(); };
   $('#aVoice').onclick = () => { a.hidden = true; openVoice(); };
@@ -1596,6 +1599,20 @@ async function recordClip(btn){
     recBusy = false; btn.textContent = 'Sin micrófono'; setTimeout(() => { btn.textContent = 'Grabar'; }, 1800);
   }
 }
+
+/* ================= RESPALDO (componente común respaldo.js) ================= */
+const blobToURL = bl => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => res(null); r.readAsDataURL(bl); });
+if (window.Respaldo) Respaldo.iniciar({
+  app:'silabas', nombre:'Robot Sílabo',
+  clave: k => k === KEY2 || k === KEY,
+  idioma: () => 'es', antes: () => save(), claseBoton: 's-btn',
+  contarNinos: () => store.profiles.length,
+  // las grabaciones de voz viven fuera de localStorage: viajan aparte en el mismo archivo
+  extra: {
+    guardar: async () => { const out = {}; for (const [k, bl] of Object.entries(clips)) { const u = await blobToURL(bl); if (u) out[k] = u; } return {clips: out}; },
+    restaurar: async e => { if (!idb) await idbOpen(); for (const [k, u] of Object.entries((e && e.clips) || {})) { try { saveClip(k, await (await fetch(u)).blob()); } catch (_) {} } await wait(300); },
+  },
+});
 
 /* ================= INICIO ================= */
 renderHome();

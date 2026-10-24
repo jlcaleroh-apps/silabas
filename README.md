@@ -43,3 +43,8 @@ Con Internet, la app busca primero la versión nueva; sin Internet, usa la copia
 
 ## Técnica
 Una sola página (`index.html`) con HTML, CSS y JavaScript, más `sw.js` (copia sin conexión) y `manifest.webmanifest` (instalación). Voz con la síntesis de voz del iPad en español. Al publicar un cambio grande, sube el número de `CACHE` en `sw.js`.
+
+## Componentes comunes (iguales en todas las apps de jlcaleroh-apps)
+- **`respaldo.js` · Respaldo del progreso:** en el panel del adulto, "Guardar respaldo" crea un archivo con el progreso de todos los niños (se guarda en Archivos, AirDrop o correo) y "Restaurar respaldo" lo carga en este u otro iPad. Muestra la fecha del último respaldo y avisa si pasaron más de 2 semanas. También pide al iPad que no borre los datos de la app.
+  - Es el mismo archivo en todas las apps: si se mejora, se copia igual en cada repo.
+  - Cada app declara qué claves de almacenamiento son suyas, porque todas comparten el dominio `jlcaleroh-apps.github.io`.
