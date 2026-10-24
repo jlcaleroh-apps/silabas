@@ -127,7 +127,8 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .item .gem::before{content:"";position:absolute;left:24%;top:12%;width:22%;height:30%;background:rgba(255,255,255,.55);clip-path:polygon(50% 0,100% 40%,40% 100%,0 40%)}
 .txt{font-family:var(--f-read);font-weight:700;font-size:48px;line-height:1;color:#0f1d48;position:relative}
 .item .rock{position:absolute;inset:6px;border-radius:46% 54% 42% 58%/55% 45% 55% 45%;background:radial-gradient(circle at 35% 30%,#b8acdf,#7466a8 55%,#463b78);box-shadow:inset -10px -12px 0 rgba(0,0,0,.18),inset 12px 10px 0 rgba(255,255,255,.08);display:grid;place-items:center}
-.item .rock .txt{color:var(--ink)}
+.item .rock{animation:spin 30s linear infinite}
+.item .rock-txt{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink);z-index:1}
 .item .rock::before,.item .rock::after{content:"";position:absolute;border-radius:50%;background:rgba(0,0,0,.18)}
 .item .rock::before{width:18px;height:14px;left:18%;top:20%}
 .item .rock::after{width:12px;height:10px;right:20%;bottom:22%}
@@ -935,10 +936,10 @@ const MODES = {
   },
   asteroides: {
     id:'asteroides', n:4, bubble:'¡Dispara a…', ask: s => `¡Dispara a ${s}!`, praise: s => `¡Le diste a ${s}!`,
-    html: s => `<span class="rock"><span class="txt">${s}</span></span>`,
+    html: s => `<span class="rock"></span><span class="txt rock-txt">${s}</span>`,   // la piedra gira lento; la sílaba queda derecha
     init(i, n, W, H, w, h){ const dir = i%2 ? -1 : 1; const usable = Math.max(H - 110 - h, 40);
-      return {x:Math.random()*(W-w), y:12 + (i/(n-1||1))*usable, vx:dir*W/(8 + Math.random()*4), vy:0, ph:Math.random()*6, spin:0}; },
-    move(o, dt, W, H, w){ o.x += o.vx*dt; if (o.x > W) o.x = -w; if (o.x < -w) o.x = W; o.spin += dt*30*Math.sign(o.vx); o.dx = 0; },
+      return {x:Math.random()*(W-w), y:12 + (i/(n-1||1))*usable, vx:dir*W/(8 + Math.random()*4), vy:0, ph:Math.random()*6}; },
+    move(o, dt, W, H, w){ o.x += o.vx*dt; if (o.x > W) o.x = -w; if (o.x < -w) o.x = W; o.dx = 0; },
   },
   rescate: {
     id:'rescate', n:3, bubble:'Un robot dice…', ask: s => `Un robot dice: ¡soy ${s}! ¡Rescátame!`, praise: s => `¡Rescataste a ${s}!`,
