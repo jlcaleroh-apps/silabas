@@ -34,5 +34,12 @@ Cada niño tiene su propio perfil: robot, planeta, estrellas y carreras. Al abri
 ## Panel del adulto
 Mantén presionado el engranaje ⚙ en la pantalla de inicio. Ahí están el progreso por sílaba, los jugadores, el límite diario opcional y la **Prueba de voz**: elegir la voz del iPad, ajustar la velocidad, escuchar cada letra, sílaba y palabra, y grabar tu propia voz para las que suenen mal.
 
+## Instalar en el iPad (funciona sin Internet)
+1. Abre la app en Safari con Internet una vez.
+2. Toca **Compartir → Agregar a pantalla de inicio**.
+3. Ábrela desde su ícono: funciona sin conexión y el progreso de los niños queda protegido.
+
+Con Internet, la app busca primero la versión nueva; sin Internet, usa la copia guardada.
+
 ## Técnica
-Una sola página (`index.html`) con HTML, CSS y JavaScript. Voz con la síntesis de voz del iPad en español.
+Una sola página (`index.html`) con HTML, CSS y JavaScript, más `sw.js` (copia sin conexión) y `manifest.webmanifest` (instalación). Voz con la síntesis de voz del iPad en español. Al publicar un cambio grande, sube el número de `CACHE` en `sw.js`.
