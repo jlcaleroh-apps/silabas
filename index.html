@@ -59,8 +59,6 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .brand small{display:block;font-weight:500;font-size:14px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
 .gear{width:44px;height:44px;border-radius:50%;position:relative;color:var(--muted);display:grid;place-items:center}
 .gear svg{width:26px;height:26px}
-.gear::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--energy);clip-path:inset(0 100% 0 0);transition:clip-path 0s}
-.gear.holding::after{clip-path:inset(0 0 0 0);transition:clip-path .9s linear}
 .home-main{flex:1;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:8px 24px;align-items:center;min-height:0}
 .planet-wrap{position:relative;min-width:0}
 .planet-wrap svg{width:100%;height:auto;max-height:52vh;display:block}
@@ -472,6 +470,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 <div id="info" class="sheet" hidden></div>
 
 <script src="respaldo.js"></script>
+<script src="adulto.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1527,13 +1526,7 @@ $('#exitBtn').onclick = () => confirmBox('¿Salir de la misión? Esta sesión no
 });
 
 /* ================= PANEL DEL ADULTO ================= */
-(function gearHold(){
-  const g = $('#gear'); let tm = 0;
-  const start = e => { e.preventDefault(); g.classList.add('holding'); tm = setTimeout(() => { g.classList.remove('holding'); openAdult(); }, 900); };
-  const stop = () => { clearTimeout(tm); g.classList.remove('holding'); };
-  g.addEventListener('pointerdown', start); g.addEventListener('pointerup', stop); g.addEventListener('pointerleave', stop); g.addEventListener('pointercancel', stop);
-  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAdult(); } });
-})();
+Adulto.mantener($('#gear'), openAdult, { idioma: () => 'es' });   // gesto común adulto.js: mantener presionado 2 segundos
 function openAdult(){
   const a = $('#adult');
   const races = Object.entries(state.races).sort().slice(-7);
@@ -1657,7 +1650,7 @@ function openInfo(){
     </ul>
     <h3>Para el adulto</h3>
     <ul>
-      <li>Panel del adulto: mantén presionado el engranaje ⚙. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
+      <li>Panel del adulto: mantén presionado el engranaje ⚙ 2 segundos. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
       <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm».</li>
       <li>Sin Internet: en Safari, Compartir → Agregar a pantalla de inicio.</li>
     </ul>

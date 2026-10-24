@@ -36,7 +36,7 @@ Cada niño tiene su propio perfil: robot, planeta, estrellas y carreras. Al abri
 - **Racha de días:** cuenta los días seguidos con al menos una misión. Si se corta, vuelve a empezar sin regaño.
 
 ## Panel del adulto
-Mantén presionado el engranaje ⚙ en la pantalla de inicio. Ahí están el progreso por sílaba, los jugadores, el límite diario opcional y la **Prueba de voz**: elegir la voz del iPad, ajustar la velocidad, escuchar cada letra, sílaba y palabra, y grabar tu propia voz para las que suenen mal.
+Mantén presionado el engranaje ⚙ **2 segundos** en la pantalla de inicio. Ahí están el progreso por sílaba, los jugadores, el límite diario opcional y la **Prueba de voz**: elegir la voz del iPad, ajustar la velocidad, escuchar cada letra, sílaba y palabra, y grabar tu propia voz para las que suenen mal.
 
 ## Instalar en el iPad (funciona sin Internet)
 1. Abre la app en Safari con Internet una vez.
@@ -54,6 +54,7 @@ Esta app sigue el [estándar común](https://github.com/jlcaleroh-apps/plantilla
 - **`respaldo.js` · Respaldo del progreso:** en el panel del adulto, "Guardar respaldo" crea un archivo con el progreso de todos los niños (se guarda en Archivos, AirDrop o correo) y "Restaurar respaldo" lo carga en este u otro iPad. Muestra la fecha del último respaldo y avisa si pasaron más de 2 semanas. También pide al iPad que no borre los datos de la app.
   - Es el mismo archivo en todas las apps: si se mejora, se copia igual en cada repo.
   - Cada app declara qué claves de almacenamiento son suyas, porque todas comparten el dominio `jlcaleroh-apps.github.io`.
+- **`adulto.js` · Gesto del panel del adulto:** mantener presionado 2 segundos; el botón se llena de color y, si se suelta antes, aparece un aviso. Así los niños no lo abren por accidente.
 
 ## Contacto
 jlcaleroh@gmail.com
