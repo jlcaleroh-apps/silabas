@@ -210,6 +210,24 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 @keyframes hover{0%,100%{translate:0 0}50%{translate:0 6px}}
 @keyframes shieldfx{0%{opacity:0;transform:translateX(-50%) scale(.6)}25%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(1.05)}}
 
+/* race modes */
+.race-modes{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.mode-card{width:200px;background:var(--space-2);border:3px solid var(--space-3);border-radius:28px;padding:12px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .15s}
+.mode-card:active{transform:scale(.95)}
+.mode-card.last{border-color:var(--crystal)}
+.mode-card .robot-svg{width:84px}
+.mode-card b{font-size:26px;line-height:1.1}
+.mode-card>span:last-child{font-size:16px;color:var(--muted)}
+.duo{display:flex;align-items:flex-end;gap:2px}
+.adult-ico{font-size:58px;line-height:1}
+.pics{display:flex;gap:14px}
+.pic-btn{width:104px;height:104px;border-radius:26px;background:var(--ink);font-size:64px;line-height:1;display:grid;place-items:center;box-shadow:0 7px 0 #b9b0d8}
+.pic-btn:active{transform:translateY(5px);box-shadow:0 2px 0 #b9b0d8}
+.pic-btn.right{background:var(--energy)}
+.pic-btn.spark{animation:shake .4s}
+.pics.demo .pic-btn{width:84px;height:84px;font-size:50px}
+@media (max-width:720px){.pic-btn{width:80px;height:80px;font-size:48px}.pics{gap:8px}.mode-card{width:160px}}
+
 /* race */
 .race-intro,.race,.race-end{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px;text-align:center}
 .together{display:inline-flex;align-items:center;gap:8px;background:var(--energy);color:var(--space);font-weight:800;padding:4px 16px;border-radius:999px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
@@ -220,7 +238,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .track{width:min(640px,100%);display:flex;flex-direction:column;gap:10px}
 .lane{position:relative;height:54px;border-radius:27px;background:rgba(21,18,58,.65);border:2px solid var(--space-3)}
 .lane::after{content:"";position:absolute;right:16px;top:6px;bottom:6px;width:6px;background:repeating-linear-gradient(180deg,var(--ink) 0 6px,transparent 6px 12px);border-radius:2px}
-.lane-label{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.lane-label{position:absolute;right:34px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
 .rocket{position:absolute;top:50%;left:0;width:64px;height:38px;transform:translate(0,-50%);transition:left .25s ease-out}
 .rocket svg{width:100%;height:100%}
 .lane.ghost .rocket{opacity:.45;transition:none}
@@ -1203,36 +1221,68 @@ function radarRound(my, used){
   });
 }
 
-/* ---------- vuelo 3: carrera contra el cohete de ayer ---------- */
-function ghostInfo(){
-  const log = state.raceLog;
-  if (!log.length) return {count:6, real:false, label:'Práctica', said:''};
+/* ---------- vuelo 3: carrera contra el cohete anterior ----------
+   Dos modos: "solo" (el niño lee la sílaba y toca el dibujo que empieza igual)
+   y "juntos" (lee en voz alta y el adulto toca ✓). Cada modo tiene su propio cohete fantasma. */
+const PICS = {
+  ma: [['mano','✋'], ['manzana','🍎'], ['mariposa','🦋'], ['mapa','🗺️']],
+  me: [['melón','🍈'], ['medalla','🏅']],
+  mi: [['miel','🍯'], ['micrófono','🎤']],
+  mo: [['moto','🛵'], ['mono','🐒'], ['mochila','🎒']],
+  mu: [['murciélago','🦇'], ['muela','🦷'], ['muñeca','🪆']],
+};
+const pickPic = s => PICS[s][Math.floor(Math.random()*PICS[s].length)];
+function ghostInfo(mode){
+  const log = state.raceLog.filter(r => (r.mode || 'juntos') === mode);
+  if (!log.length) return {count: mode === 'solo' ? 5 : 6, real:false, label:'Práctica', said:''};
   const last = log[log.length-1], d = daysBetween(last.date, today());
   const label = d === 0 ? 'Antes' : d === 1 ? 'Ayer' : 'La última';
   const said = d === 0 ? 'tu cohete de antes' : d === 1 ? 'tu cohete de ayer' : 'tu cohete de la última vez';
-  return {count:last.count, real:true, label, said};
+  return {count:last.count, real:true, label, said, best: Math.max(...log.map(r => r.count))};
 }
 function flightRace(my){
   return new Promise(resolve => {
     const stage = $('#stage'); stage.className = 'stage mode-race';
-    setBubble('¡A leer en voz alta!');
-    const g = ghostInfo();
+    setBubble('¿Cómo corres?');
+    const last = state.raceMode || 'solo';
     stage.innerHTML = `<div class="race-intro">
-      <span class="together">Modo juntos</span>
-      <p class="adult-note"><b>Adulto:</b> durante 30 segundos aparece una sílaba. Cuando el niño la lea en voz alta, toca <b>✓ ¡La leyó!</b> Si necesita ayuda, toca la bocina: la sílaba suena y cuenta como práctica.</p>
-      <button class="big-btn" id="raceGo">¡Listos!</button>
+      <p class="record" style="font-size:clamp(26px,4vw,36px)">Carrera de 30 segundos</p>
+      <div class="race-modes">
+        <button class="mode-card${last === 'solo' ? ' last' : ''}" data-m="solo">${robotSVG()}<b>Yo solo</b><span>Lee y toca el dibujo</span></button>
+        <button class="mode-card${last === 'juntos' ? ' last' : ''}" data-m="juntos"><span class="duo">${robotSVG()}<span class="adult-ico" aria-hidden="true">🧑</span></span><b>Con un adulto</b><span>Lee en voz alta</span></button>
+      </div>
       <button class="link-btn" id="raceSkip">Hoy sin carrera</button></div>`;
-    prompt(my, g.real ? `¡Carrera! Lee en voz alta cada sílaba. ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : '¡Carrera! Lee en voz alta cada sílaba, tan rápido como puedas.');
+    prompt(my, '¡Carrera de treinta segundos! ¿Corres solo, o con un adulto?');
     $('#raceSkip').onclick = () => { my.cells = 5; renderEnergy(); resolve(); };
-    $('#raceGo').onclick = async () => {
-      await countdown(my, false);
-      if (alive(my)) runRace(my, g, resolve);
-    };
+    stage.querySelectorAll('.mode-card').forEach(b => b.onclick = () => {
+      const mode = b.dataset.m; state.raceMode = mode; save(); sfx.tap();
+      mode === 'solo' ? introSolo(my, resolve) : introJuntos(my, resolve);
+    });
   });
 }
-function runRace(my, g, resolve){
-  const stage = $('#stage');
-  const trackMax = Math.max(g.count, 6) + 3;
+function introSolo(my, resolve){
+  const stage = $('#stage'), g = ghostInfo('solo');
+  stage.innerHTML = `<div class="race-intro">
+    <div class="card" style="font-size:min(90px,14vh)">mo</div>
+    <div class="pics demo">${['🍎','🛵','🍯'].map((e,i) => `<span class="pic-btn${i === 1 ? ' right' : ''}">${e}</span>`).join('')}</div>
+    <button class="big-btn" id="raceGo">¡Listo!</button></div>`;
+  setBubble('Lee y toca el dibujo');
+  prompt(my, `Lee la sílaba y toca el dibujo que empieza igual. Mo... ¡moto!` + (g.real ? ` ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : ''));
+  $('#raceGo').onclick = async () => { await countdown(my, false); if (alive(my)) runRace(my, 'solo', g, resolve); };
+}
+function introJuntos(my, resolve){
+  const stage = $('#stage'), g = ghostInfo('juntos');
+  stage.innerHTML = `<div class="race-intro">
+    <span class="together">Modo juntos</span>
+    <p class="adult-note"><b>Adulto:</b> durante 30 segundos aparece una sílaba. Cuando el niño la lea en voz alta, toca <b>✓ ¡La leyó!</b> Si necesita ayuda, toca la bocina: la sílaba suena y cuenta como práctica.</p>
+    <button class="big-btn" id="raceGo">¡Listos!</button></div>`;
+  setBubble('¡A leer en voz alta!');
+  prompt(my, g.real ? `¡Lee en voz alta cada sílaba! ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : '¡Lee en voz alta cada sílaba, tan rápido como puedas!');
+  $('#raceGo').onclick = async () => { await countdown(my, false); if (alive(my)) runRace(my, 'juntos', g, resolve); };
+}
+function runRace(my, mode, g, resolve){
+  const stage = $('#stage'), solo = mode === 'solo';
+  const trackMax = Math.max(g.count, solo ? 5 : 6) + 3;
   stage.innerHTML = `<div class="race">
     <div class="track">
       <div class="lane"><span class="lane-label">Hoy</span><div class="rocket" id="rMe">${MINI_ROCKET('#eef0fb')}</div></div>
@@ -1240,18 +1290,49 @@ function runRace(my, g, resolve){
     </div>
     <div class="timebar"><i id="tFill"></i></div>
     <div style="position:relative"><span class="praise-flash" id="pflash"></span><div class="card" id="rCard"></div></div>
-    <div class="race-btns"><button class="help-btn" id="rHelp" aria-label="Ayuda: escuchar la sílaba">${SPK}</button><button class="ok-btn" id="rOk">✓ ¡La leyó!</button></div>
+    ${solo
+      ? `<div class="race-btns"><button class="help-btn" id="rHelp" aria-label="Ayuda: escuchar la sílaba">${SPK}</button><div class="pics" id="pics"></div></div>`
+      : `<div class="race-btns"><button class="help-btn" id="rHelp" aria-label="Ayuda: escuchar la sílaba">${SPK}</button><button class="ok-btn" id="rOk">✓ ¡La leyó!</button></div>`}
     <div class="race-count">Sílabas: <b id="rCount">0</b></div></div>`;
-  setBubble('¡Lee en voz alta!');
+  setBubble(solo ? 'Lee y toca el dibujo' : '¡Lee en voz alta!');
   const pool = SYL.filter(s => stars(s) >= 1); const deck = pool.length >= 3 ? pool : SYL;
-  let count = 0, cur = null, shownAt = 0, helped = false, lastOk = 0, over = false;
+  let count = 0, cur = null, shownAt = 0, helped = false, erred = false, lastOk = 0, over = false;
   const t0 = performance.now(); let raf = 0;
   const laneW = () => $('#rMe').parentElement.clientWidth - 64 - 26;
   function nextCard(){
     let s; do { s = deck[Math.floor(Math.random()*deck.length)]; } while (s === cur && deck.length > 1);
-    cur = s; helped = false; shownAt = performance.now();
+    cur = s; helped = false; erred = false; shownAt = performance.now();
     const c = $('#rCard'); c.textContent = s; c.classList.remove('flip'); void c.offsetWidth; c.classList.add('flip');
+    if (solo){
+      const others = sample(SYL.filter(x => x !== s), 2);
+      const opts = shuffle([[s, ...pickPic(s)], ...others.map(o => [o, ...pickPic(o)])]);
+      $('#pics').innerHTML = opts.map(([syl, word, emo]) => `<button class="pic-btn" data-s="${syl}" data-w="${word}" aria-label="${word}">${emo}</button>`).join('');
+      $('#pics').querySelectorAll('.pic-btn').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); tapPic(b); }));
+    }
   }
+  function scored(word){
+    const now = performance.now(), dt = now - shownAt, r = state.syl[cur];
+    count++; r.last = today();
+    const clean = !helped && !erred;
+    if (clean){ r.read++; my.read.add(cur); if (dt < 2000) r.fast++; }
+    save(); tone(988,.1,'sine',.16); tone(1319,.14,'sine',.14,.06);
+    $('#rCount').textContent = count;
+    $('#rMe').style.left = (Math.min(1, count/trackMax) * laneW()) + 'px';
+    const pf = $('#pflash'); pf.textContent = clean ? `¡Leíste ${cur}!` : `¡Muy bien, ${cur}!`; pf.classList.remove('show'); void pf.offsetWidth; pf.classList.add('show');
+    if (word) speak(`¡${word}!`, 1);
+    my.cells = Math.min(5, Math.ceil(count/2)); renderEnergy();
+    nextCard();
+  }
+  function tapPic(b){
+    const now = performance.now(); if (over || now - lastOk < 250) return; lastOk = now;
+    if (b.dataset.s === cur){ b.classList.add('right'); scored(b.dataset.w); }
+    else {
+      erred = true; sfx.spark(); b.classList.remove('spark'); void b.offsetWidth; b.classList.add('spark');
+      speak(`¡Ups, chispa! Eso es ${b.dataset.w}. ¡Mira otra vez!`);
+    }
+  }
+  if (!solo) $('#rOk').onclick = () => { const now = performance.now(); if (over || now - lastOk < 250) return; lastOk = now; scored(null); };
+  $('#rHelp').onclick = () => { if (over) return; helped = true; sayUnit(cur); };
   function frame(t){
     const el = t - t0, p = Math.min(1, el/RACE_MS);
     $('#tFill').style.transform = `scaleX(${1-p})`;
@@ -1259,34 +1340,21 @@ function runRace(my, g, resolve){
     if (el >= RACE_MS) return finish();
     raf = requestAnimationFrame(frame);
   }
-  $('#rOk').onclick = () => {
-    const now = performance.now(); if (over || now - lastOk < 250) return; lastOk = now;
-    const dt = now - shownAt, r = state.syl[cur];
-    count++; r.last = today();
-    if (!helped){ r.read++; my.read.add(cur); if (dt < 2000) r.fast++; }
-    save(); tone(988,.1,'sine',.16); tone(1319,.14,'sine',.14,.06);
-    $('#rCount').textContent = count;
-    $('#rMe').style.left = (Math.min(1, count/trackMax) * laneW()) + 'px';
-    const pf = $('#pflash'); pf.textContent = helped ? `¡Muy bien, ${cur}!` : `¡Leíste ${cur}!`; pf.classList.remove('show'); void pf.offsetWidth; pf.classList.add('show');
-    my.cells = Math.min(5, Math.ceil(count/2)); renderEnergy();
-    nextCard();
-  };
-  $('#rHelp').onclick = () => { if (over) return; helped = true; sayUnit(cur); };
   my.cleanup = () => cancelAnimationFrame(raf);
   nextCard(); raf = requestAnimationFrame(frame);
   async function finish(){
     over = true; cancelAnimationFrame(raf);
-    const t = today(); const prevBest = Math.max(0, ...state.raceLog.map(r => r.count));
+    const t = today(); const prevBest = g.best || 0;
     state.races[t] = Math.max(state.races[t] || 0, count);
-    state.raceLog.push({date:t, count}); if (state.raceLog.length > 60) state.raceLog.splice(0, state.raceLog.length - 60);
+    state.raceLog.push({date:t, count, mode}); if (state.raceLog.length > 80) state.raceLog.splice(0, state.raceLog.length - 80);
     save();
     const beatGhost = g.real && count > g.count, record = count > prevBest && prevBest > 0;
-    my.race = {count, ghost:g};
+    my.race = {count, ghost:g, mode};
     my.cells = 5; renderEnergy();
     stage.innerHTML = `<div class="race-end">
       ${record ? '<span class="badge-new">¡Nuevo récord!</span>' : ''}
       <p class="record">Hoy <span>${count} sílabas</span> en 30 segundos</p>
-      <p class="record-sub">${g.real ? `${g.label}: ${g.count}` : 'Tu primera carrera. ¡La próxima vez tu cohete de hoy te espera!'}</p>
+      <p class="record-sub">${g.real ? `${g.label}: ${g.count}` : 'Tu primera carrera así. ¡La próxima vez tu cohete de hoy te espera!'}</p>
       <button class="big-btn" id="raceDone">¡Despegar!</button></div>`;
     if (record || beatGhost) sfx.fanfare(); else sfx.good();
     setBubble('¡Qué carrera!');
@@ -1439,8 +1507,8 @@ function openAdult(){
     <p>Jugador: <b>${esc(curProfile().name)}</b> · Sesiones completas: <b>${state.sessions}</b> · Hoy: <b>${sessionsToday()}</b>${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
     <table><thead><tr><th>Sílaba</th><th>Estrellas</th><th>Reconoce al oír</th><th>Lee sola</th><th>Lee &lt; 2 s</th><th>Último día</th></tr></thead>
     <tbody>${SYL.map(s => { const r = state.syl[s]; return `<tr><td>${s}</td><td style="color:#c08a00">${'★'.repeat(stars(s)) || '–'}</td><td>${r.heard}/3</td><td>${r.read}/2</td><td>${r.fast}/2</td><td>${r.last ? r.last.slice(5) : '–'}${faded(s) ? ' (apagada)' : ''}</td></tr>`; }).join('')}</tbody></table>
-    <p class="muted-note">★ al reconocerla 3 veces al primer intento · ★★ al leerla sola 2 veces en la carrera · ★★★ al leerla 2 veces en menos de 2 segundos (incluye tu toque).</p>
-    <p><b>Carreras de 30 s (mejor por día):</b> ${races.length ? races.map(([d,v]) => `${d.slice(5)}: ${v}`).join(' · ') : 'todavía ninguna'}</p>
+    <p class="muted-note">★ al reconocerla 3 veces al primer intento · ★★ al leerla sola 2 veces en la carrera (modo solo: toca el dibujo correcto sin ayuda ni error; modo juntos: tú confirmas) · ★★★ al leerla 2 veces en menos de 2 segundos.</p>
+    <p><b>Últimas carreras de 30 s:</b> ${state.raceLog.length ? state.raceLog.slice(-8).map(r => `${r.date.slice(5)} ${(r.mode || 'juntos') === 'solo' ? 'solo' : 'juntos'}: ${r.count}`).join(' · ') : 'todavía ninguna'}</p>
     <p><b>Límite de misiones por día</b> <span class="muted-note">(sin límite = aprovechar el hiperfoco)</span><br>
       <select id="aLimit">${[0,1,2,3,5].map(n => `<option value="${n}"${store.settings.dailyLimit === n ? ' selected' : ''}>${n ? n + ' por día' : 'Sin límite'}</option>`).join('')}</select></p>
     <div><b>Jugadores</b>${store.profiles.map(p => `<div class="prof-row"><b>${esc(p.name)}${p.id === store.current ? ' (jugando)' : ''}</b>

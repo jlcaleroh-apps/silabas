@@ -11,7 +11,7 @@ Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía d
 1. **Aterrizaje** en el planeta.
 2. **Vuelo 1, Energía:** atrapar cristales con la sílaba que dice Sílabo y armar "m + vocal".
 3. **Vuelo 2, Misión del día** (rota): Tablero de disparo, Lluvia de asteroides, Rescate de robots o Radar de sílabas.
-4. **Vuelo 3, Carrera de 30 s** contra el cohete de ayer (modo juntos: el adulto toca ✓ cuando el niño lee).
+4. **Vuelo 3, Carrera de 30 s** contra el cohete anterior. Dos modos: **Yo solo** (el niño lee la sílaba y toca el dibujo que empieza igual: mo → moto) y **Con un adulto** (lee en voz alta y el adulto toca ✓). Cada modo tiene su propio cohete fantasma.
 5. Despegue, el planeta crece y premio para el robot. Después, "¡Otra misión!" o "Terminar por ahora": no hay cuota diaria fija, para aprovechar el hiperfoco (el adulto puede poner un límite opcional).
 
 ## Progreso
