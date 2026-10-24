@@ -5,21 +5,22 @@ Juego para iPad que ayuda a niños de 5 y 6 años con TDAH a aprender a leer sí
 **Jugar:** https://jlcaleroh-apps.github.io/silabas/
 
 ## La historia
-Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía de sílabas. Cada planeta es una consonante; el primero es el **Planeta M** (ma, me, mi, mo, mu).
+Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía de sílabas. Cada planeta es una consonante: **Planeta M** (ma, me, mi, mo, mu) y **Planeta P** (pa, pe, pi, po, pu). En el planeta P las misiones mezclan P y M (pa / ma) para practicar la diferencia. En el inicio se toca un planeta para viajar.
 
 ## Una sesión (5–8 minutos)
 1. **Aterrizaje** en el planeta.
-2. **Vuelo 1, Energía:** atrapar cristales con la sílaba que dice Sílabo y armar "m + vocal".
+2. **Vuelo 1, Energía:** atrapar cristales con la sílaba que dice Sílabo y armar "consonante + vocal".
 3. **Vuelo 2, Misión del día** (rota): Tablero de disparo, Lluvia de asteroides, Rescate de robots o Radar de sílabas.
+   - **Defensa de la Tierra (jefe final):** cuando las 5 sílabas del planeta tienen ⭐, un meteorito gigante baja hacia la Tierra. El niño arma la sílaba dictada (consonante + vocal) y dispara; 5 aciertos lo destruyen y el planeta gana una bandera y un escudo. Los errores solo pausan el meteorito; si se acerca, un escudo lo empuja y llega una pista. Después vuelve de vez en cuando.
 4. **Vuelo 3, Carrera de 30 s** contra el cohete anterior. Dos modos: **Yo solo** (el niño lee la sílaba y toca el dibujo que empieza igual: mo → moto) y **Con un adulto** (lee en voz alta y el adulto toca ✓). Cada modo tiene su propio cohete fantasma.
 5. Despegue, el planeta crece y premio para el robot. Después, "¡Otra misión!" o "Terminar por ahora": no hay cuota diaria fija, para aprovechar el hiperfoco (el adulto puede poner un límite opcional).
 
 ## Progreso
 - La carrera compara con tu carrera anterior (cohete fantasma).
 - ⭐ reconoce la sílaba al escucharla · ⭐⭐ la lee sola · ⭐⭐⭐ la lee en menos de 2 s.
-- El planeta crece con cada sesión; las palabras desbloqueadas aparecen como objetos del planeta.
+- Cada planeta crece con sus propias sesiones. Las palabras desbloqueadas (mamá, mano, papá, pera, piña, puma, mapa…) aparecen dibujadas sobre el planeta y se escuchan al tocarlas.
 - Las sílabas sin práctica en 3 días "se apagan" y un robot pide rescate.
-- El Planeta P se desbloquea con ⭐⭐ en las 5 sílabas de la M.
+- El Planeta P se desbloquea con ⭐⭐ en las 5 sílabas de la M. El progreso anterior se conserva: todo lo jugado antes cuenta para el planeta M.
 
 ## Reglas de diseño
 - Feedback en menos de 1 segundo, con elogio específico por voz.

@@ -222,6 +222,35 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .bkey.hint{animation:hint 1s ease-in-out infinite}
 .bkey.right{background:var(--energy)}
 @keyframes hover{0%,100%{translate:0 0}50%{translate:0 6px}}
+/* selector de planetas */
+.planet-switch{display:flex;gap:8px;flex:none}
+#game.on-P .stage::after{background:radial-gradient(ellipse at 50% 10%,#7ee8cf,#22b39a 30%,#0b5a52 70%)}
+.mini-planet.pl-M{background:radial-gradient(circle at 35% 30%,#ff9cc8,#e0478f 60%,#7d1e4f)}
+.mini-planet.pl-P{background:radial-gradient(circle at 35% 30%,#a6f5df,#22b39a 60%,#0b5a52)}
+button.mini-planet{border:3px solid transparent;cursor:pointer;width:52px;height:52px;font-family:inherit}
+button.mini-planet.now{border-color:#ffd447;box-shadow:0 0 14px rgba(255,212,71,.7)}
+.pw.grow{transform-box:fill-box;transform-origin:center}
+/* Defensa de la Tierra */
+.defensa{position:relative;z-index:1;height:100%}
+.earth{position:absolute;left:50%;bottom:0;transform:translate(-50%,64%);width:min(560px,96%);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 40% 30%,#8fe3ff,#2b8fe0 45%,#14457f 75%);box-shadow:0 0 50px rgba(98,180,255,.55);overflow:hidden;z-index:0}
+.earth::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 22% 14% at 30% 22%,#4fc46a 60%,transparent 62%),radial-gradient(ellipse 18% 20% at 66% 30%,#4fc46a 60%,transparent 62%),radial-gradient(ellipse 14% 9% at 48% 12%,#4fc46a 60%,transparent 62%)}
+.boss{position:absolute;left:50%;top:0;width:160px;height:160px;border-radius:50%;z-index:3;will-change:transform;
+  background:radial-gradient(circle at 35% 30%,#b08a6e,#6e4b3a 55%,#3a261f);box-shadow:0 0 0 6px rgba(255,122,89,.35),0 0 40px rgba(255,122,89,.6)}
+.boss svg{position:absolute;inset:0;width:100%;height:100%}
+.boss .crack{opacity:0;transition:opacity .25s}.boss .crack.on{opacity:1}
+.boss.hit{animation:shake .4s}
+.boss.boom{transition:transform .6s ease-out,opacity .6s;opacity:0}
+.boss-hp{position:absolute;top:8px;right:12px;display:flex;gap:6px;z-index:4}
+.boss-hp i{width:22px;height:22px;border-radius:50%;background:#3a3470;border:2px solid #8d86c9}.boss-hp i.on{background:var(--energy);border-color:#fff}
+.syl-built{position:absolute;left:50%;bottom:226px;transform:translateX(-50%);z-index:4;display:flex;gap:6px;align-items:center}
+.syl-built span{min-width:64px;height:70px;border-radius:18px;border:3px dashed #8d86c9;display:grid;place-items:center;font-family:var(--f-read);font-weight:700;font-size:40px;color:#fff;background:rgba(21,18,58,.6)}
+.syl-built span.full{border-style:solid;border-color:var(--crystal)}
+.dkeys{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;align-items:center;z-index:4}
+.dkeys .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.dkeys .bkey{min-width:84px;height:80px;font-size:40px}
+.dkeys .bkey.cons{background:#ffd447}
+.boss-flash{position:absolute;inset:0;background:#fff;z-index:9;animation:laser .8s forwards;pointer-events:none}
 @keyframes shieldfx{0%{opacity:0;transform:translateX(-50%) scale(.6)}25%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(1.05)}}
 
 /* race modes */
@@ -291,6 +320,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .end-sub{font-size:24px;margin:0;color:var(--muted);text-wrap:balance}
 .end-planet{width:min(420px,90%)}
 .end-planet svg{width:100%;height:auto}
+.end-planet.small{width:min(260px,60%)}
 .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .chips .syl-chip{min-width:92px}
 .rewards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:100%}
@@ -394,6 +424,9 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
   .meteor{min-width:96px;height:96px}
   .meteor .txt{font-size:38px}
   .cannon{bottom:100px}
+  .boss{width:120px;height:120px}
+  .dkeys .row{gap:8px;flex-wrap:nowrap}.dkeys .bkey{min-width:56px;height:64px;font-size:32px;padding:0 6px}
+  .syl-built{bottom:170px}.syl-built span{min-width:54px;height:58px;font-size:32px}
 }
 @media (max-height:640px){
   .captain{min-height:84px}
@@ -477,7 +510,28 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 (() => {
 'use strict';
 const $ = s => document.querySelector(s);
-const SYL = ['ma','me','mi','mo','mu'];
+/* ================= PLANETAS =================
+   Cada planeta es una consonante. Al desbloquear uno nuevo, las misiones mezclan sus sílabas con las anteriores. */
+const PLANETS = {
+  M: { id:'M', c:'m', name:'Planeta M', syl:['ma','me','mi','mo','mu'], col:['#ff9cc8','#e0478f','#7d1e4f'],
+       intro:'¡Aterrizamos en el planeta M! Sílabo necesita energía de sílabas.',
+       out:'busquen juntos cosas que empiecen con «mmm»: mamá, mano, mesa, mono, moto.',
+       sight:['mamá','mimo','mesa','mano','mono','mamut'],
+       radar:[{w:'mar', s:['mar'], e:'🌊'}, {w:'mu', s:['mu'], e:'🐄'}, {w:'mamá', s:['ma','má'], e:'👩'}, {w:'mano', s:['ma','no'], e:'✋'},
+              {w:'moto', s:['mo','to'], e:'🛵'}, {w:'mono', s:['mo','no'], e:'🐒'}, {w:'mochila', s:['mo','chi','la'], e:'🎒'},
+              {w:'muñeca', s:['mu','ñe','ca'], e:'🪆'}, {w:'manzana', s:['man','za','na'], e:'🍎'}] },
+  P: { id:'P', c:'p', name:'Planeta P', syl:['pa','pe','pi','po','pu'], col:['#a6f5df','#22b39a','#0b5a52'],
+       intro:'¡Aterrizamos en el planeta P! Aquí viven las sílabas de la P, y tus amigas de la M vienen de visita.',
+       out:'busquen juntos cosas que empiecen con «p»: papá, pera, piña, pato, puerta. Celebren cada una.',
+       sight:['papá','pera','piña','puma','mapa','pato'],
+       radar:[{w:'pan', s:['pan'], e:'🍞'}, {w:'pez', s:['pez'], e:'🐟'}, {w:'papá', s:['pa','pá'], e:'👨'}, {w:'pera', s:['pe','ra'], e:'🍐'},
+              {w:'piña', s:['pi','ña'], e:'🍍'}, {w:'pato', s:['pa','to'], e:'🦆'}, {w:'pulpo', s:['pul','po'], e:'🐙'},
+              {w:'paloma', s:['pa','lo','ma'], e:'🕊️'}, {w:'pelota', s:['pe','lo','ta'], e:'⚽'}] },
+};
+const PLANET_ORDER = ['M', 'P'];
+const SYL = PLANETS.M.syl;                                   // sílabas del primer planeta
+const ALL_SYL = PLANET_ORDER.flatMap(k => PLANETS[k].syl);
+const CONS_SOUND = {m:'mmm', p:'pe'};
 const VOW = ['a','e','i','o','u'];
 const KEY = 'robotSilabo.v1';
 const DAY = 864e5;
@@ -487,14 +541,18 @@ const SPK = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14
 
 /* ================= STATE ================= */
 function freshSyl(){ return {heard:0, read:0, fast:0, miss:0, last:null}; }
+function freshPs(){ return Object.fromEntries(PLANET_ORDER.map(k => [k, {sessions:0, boss:false}])); }
 function freshState(color = null){
-  return {v:2, sessions:0, last:null, dayShift:0,
-    syl:Object.fromEntries(SYL.map(s => [s, freshSyl()])),
+  return {v:3, sessions:0, last:null, dayShift:0, planet:'M', ps:freshPs(),
+    syl:Object.fromEntries(ALL_SYL.map(s => [s, freshSyl()])),
     words:[], owned:[], color, races:{}, raceLog:[], daily:{date:null, n:0}, streak:{n:0, last:null, best:0}, pSeen:false};
 }
 function normState(d){
   const s = Object.assign(freshState(), d || {});
-  s.syl = Object.fromEntries(SYL.map(k => [k, Object.assign(freshSyl(), ((d || {}).syl || {})[k] || {})]));
+  s.syl = Object.fromEntries(ALL_SYL.map(k => [k, Object.assign(freshSyl(), ((d || {}).syl || {})[k] || {})]));
+  if (!(d || {}).ps){ s.ps = freshPs(); s.ps.M.sessions = s.sessions || 0; }          // progreso anterior: todo era del planeta M
+  PLANET_ORDER.forEach(k => { if (!s.ps[k]) s.ps[k] = {sessions:0, boss:false}; });
+  if (!PLANETS[s.planet]) s.planet = 'M';
   if (!Array.isArray(s.raceLog)) s.raceLog = Object.entries(s.races || {}).sort().map(([date, count]) => ({date, count}));
   if (!s.daily) s.daily = {date:null, n:0};
   if (!s.streak) s.streak = {n:0, last:null, best:0};
@@ -543,23 +601,37 @@ function faded(s){
 function starsHTML(n){ let h=''; for(let i=0;i<3;i++) h += i<n ? '★' : '<span class="dim">★</span>'; return h; }
 
 const WORDS = [
-  {w:'mamá',  e:'👩', need:{ma:1}},
-  {w:'mesa',  e:'',   need:{me:1}},
-  {w:'mimo',  e:'🤗', need:{mi:1, mo:1}},
-  {w:'mamut', e:'🦣', need:{ma:1, mu:1}},
-  {w:'mono',  e:'🐒', need:{mo:2}},
-  {w:'mano',  e:'✋', need:{ma:2}},
+  {w:'mamá',  e:'👩', need:{ma:1}, p:'M'},
+  {w:'mesa',  e:'',   need:{me:1}, p:'M'},
+  {w:'mimo',  e:'🤗', need:{mi:1, mo:1}, p:'M'},
+  {w:'mamut', e:'🦣', need:{ma:1, mu:1}, p:'M'},
+  {w:'mono',  e:'🐒', need:{mo:2}, p:'M'},
+  {w:'mano',  e:'✋', need:{ma:2}, p:'M'},
+  {w:'papá',  e:'👨', need:{pa:1}, p:'P'},
+  {w:'pera',  e:'🍐', need:{pe:1}, p:'P'},
+  {w:'piña',  e:'🍍', need:{pi:1}, p:'P'},
+  {w:'pollo', e:'🐔', need:{po:1}, p:'P'},
+  {w:'puma',  e:'🐆', need:{pu:1, ma:1}, p:'P'},
+  {w:'mapa',  e:'🗺️', need:{ma:1, pa:2}, p:'P'},
 ];
+/* planeta actual y sílabas en juego (en el planeta P se mezclan P y M) */
+function pUnlocked(){ return state.pSeen || SYL.every(s => stars(s) >= 2); }
+function planetOk(k){ return k === 'M' || (k === 'P' && pUnlocked()); }
+function curPlanet(){ return PLANETS[planetOk(state.planet) ? state.planet : 'M']; }
+function planetsOpen(){ return PLANET_ORDER.filter(planetOk); }
+function poolSyl(){ const pl = curPlanet(); return pl.id === 'M' ? pl.syl.slice() : [...pl.syl, ...PLANETS.M.syl]; }
+function consInPlay(){ return [...new Set(poolSyl().map(s => s[0]))]; }
+/* distractores: primero la misma vocal con otra consonante (pa/ma) y la misma consonante con otra vocal */
+function distract(target, n){
+  const pool = poolSyl().filter(x => x !== target);
+  const near = shuffle(pool.filter(x => x[1] === target[1] || x[0] === target[0]));
+  const rest = shuffle(pool.filter(x => !near.includes(x)));
+  return [...near, ...rest].slice(0, n);
+}
+function bossReady(pl = curPlanet()){ return pl.syl.every(s => stars(s) >= 1) && !state.ps[pl.id].boss; }
 const TABLE_ICON = '<svg viewBox="0 0 32 24" width="30" height="22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M3 7h26M7 7v14M25 7v14"/></svg>';
 function wordIcon(o){ return o.e ? `<span class="e" aria-hidden="true">${o.e}</span>` : TABLE_ICON; }
 
-const RADAR = [
-  {w:'mar', s:['mar'], e:'🌊'}, {w:'mu', s:['mu'], e:'🐄'},
-  {w:'mamá', s:['ma','má'], e:'👩'}, {w:'mano', s:['ma','no'], e:'✋'},
-  {w:'moto', s:['mo','to'], e:'🛵'}, {w:'mono', s:['mo','no'], e:'🐒'},
-  {w:'mochila', s:['mo','chi','la'], e:'🎒'}, {w:'muñeca', s:['mu','ñe','ca'], e:'🪆'},
-  {w:'manzana', s:['man','za','na'], e:'🍎'},
-];
 const NUMW = ['', 'una', 'dos', 'tres'];
 
 const ACC = [
@@ -638,7 +710,7 @@ const sfx = {
 };
 
 /* ---- Letra, sílaba o palabra sola: grabación del adulto si existe (voz.js); si no, la voz del iPad ---- */
-const sayOfUnit = x => x === 'm' ? 'mmm' : x;
+const sayOfUnit = x => CONS_SOUND[x] || x;
 function sayUnit(x, rate = .82){
   if (window.Voz) return Voz.decirUnidad(x, sayOfUnit(x));
   return speak(sayOfUnit(x), rate);
@@ -699,7 +771,8 @@ const ROCKET = `<svg viewBox="0 0 120 200" aria-hidden="true">
 const MINI_ROCKET = c => `<svg viewBox="0 0 64 38"><path d="M2 19 L12 12 L12 26 Z" fill="#ffd447"/><path d="M10 9 H44 C56 9 62 19 62 19 C62 19 56 29 44 29 H10 Z" fill="${c}"/><circle cx="42" cy="19" r="6" fill="#1b2050" stroke="#62e6e1" stroke-width="2"/><path d="M16 9 L10 1 L26 9 Z M16 29 L10 37 L26 29 Z" fill="#e0478f"/></svg>`;
 
 let planetSeq = 0;
-function planetSVG(stage, popLast = false){
+const TABLE_SVG = '<path d="M-14 -6 H14 M-10 -6 V8 M10 -6 V8" stroke="#fff" stroke-width="4" stroke-linecap="round"/>';
+function planetSVG(stage, popLast = false, pl = curPlanet(), opts = {}){
   const u = 'p' + (++planetSeq);   // ids únicos: si dos planetas comparten id, el oculto deja sin color al visible
   const cx = 200, cy = 200, R = 112;
   const items = [];
@@ -709,23 +782,37 @@ function planetSVG(stage, popLast = false){
   const tree = c => `<rect x="-5" y="-32" width="10" height="34" rx="4" fill="#5b2f73"/><circle cx="0" cy="-44" r="19" fill="${c}"/><circle cx="-14" cy="-32" r="12" fill="${c}"/><circle cx="14" cy="-34" r="13" fill="${c}"/><circle cx="-5" cy="-50" r="4" fill="#fff" opacity=".5"/>`;
   const bot = c => `<rect x="-3" y="-44" width="6" height="10" fill="#a9afd6"/><circle cx="0" cy="-46" r="4" fill="#ffd447"/><rect x="-13" y="-36" width="26" height="20" rx="7" fill="${c}"/><circle cx="-5" cy="-26" r="3" fill="#1b2050"/><circle cx="5" cy="-26" r="3" fill="#1b2050"/><rect x="-10" y="-16" width="20" height="16" rx="5" fill="${c}"/>`;
   const flowers = '<g><line x1="-10" y1="0" x2="-10" y2="-18" stroke="#2fbfa8" stroke-width="3"/><circle cx="-10" cy="-22" r="6" fill="#ffd447"/><line x1="8" y1="0" x2="8" y2="-14" stroke="#2fbfa8" stroke-width="3"/><circle cx="8" cy="-18" r="5" fill="#62e6e1"/></g>';
-  add(1, 0, base); add(2, 34, antenna); add(3, -36, tree('#2fbfa8')); add(3, 62, tree('#3fd0b8'));
+  const flag = '<line x1="0" y1="2" x2="0" y2="-46" stroke="#c9cdea" stroke-width="4"/><path d="M0 -46 L26 -38 L0 -30 Z" fill="#ffd447"/><circle cx="12" cy="-38" r="3" fill="#ff7a59"/>';
+  const treeC = pl.id === 'P' ? ['#ffb347', '#ffd447'] : ['#2fbfa8', '#3fd0b8'];
+  add(1, 0, base); add(2, 34, antenna); add(3, -36, tree(treeC[0])); add(3, 62, tree(treeC[1]));
   add(4, -62, bot('#ffd447')); add(5, 84, bot('#62e6e1')); add(6, -86, flowers); add(7, 14, bot('#ff7a59'));
+  if (state.ps[pl.id].boss) items.push({minStage: 99, angle: -14, svg: flag});      // bandera de la Defensa de la Tierra
   const top = Math.min(stage, 7);
-  let s = `<svg viewBox="0 0 400 330" role="img" aria-label="Planeta M, etapa ${stage}">
-  <defs><radialGradient id="${u}g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#ff9cc8"/><stop offset=".45" stop-color="#e0478f"/><stop offset="1" stop-color="#7d1e4f"/></radialGradient>
-  <radialGradient id="${u}w" cx="50%" cy="50%" r="50%"><stop offset=".6" stop-color="#e0478f" stop-opacity=".35"/><stop offset="1" stop-color="#e0478f" stop-opacity="0"/></radialGradient></defs>
+  const [c0, c1, c2] = pl.col;
+  let s = `<svg viewBox="0 0 400 330" role="img" aria-label="${pl.name}, etapa ${stage}">
+  <defs><radialGradient id="${u}g" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="${c0}"/><stop offset=".45" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></radialGradient>
+  <radialGradient id="${u}w" cx="50%" cy="50%" r="50%"><stop offset=".6" stop-color="${c1}" stop-opacity=".35"/><stop offset="1" stop-color="${c1}" stop-opacity="0"/></radialGradient></defs>
   <circle cx="${cx}" cy="${cy}" r="${R+40}" fill="url(#${u}w)"/>`;
+  if (state.ps[pl.id].boss) s += `<circle cx="${cx}" cy="${cy}" r="${R+16}" fill="none" stroke="#62e6e1" stroke-width="3" stroke-dasharray="6 8" opacity=".7"/>`;
   items.forEach(it => {
     const cls = popLast && it.minStage === top ? ' class="grow"' : '';
     s += `<g transform="rotate(${it.angle} ${cx} ${cy}) translate(${cx} ${cy - R + 2})"><g${cls}>${it.svg}</g></g>`;
   });
   s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#${u}g)"/>
-  <text x="${cx}" y="${cy+34}" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="104" fill="#fff" opacity=".13">M</text>
+  <text x="${cx}" y="${cy+34}" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="104" fill="#fff" opacity=".13">${pl.id}</text>
   <circle cx="150" cy="232" r="16" fill="#000" opacity=".12"/><circle cx="252" cy="250" r="11" fill="#000" opacity=".12"/><circle cx="262" cy="160" r="8" fill="#000" opacity=".1"/><circle cx="136" cy="168" r="6" fill="#fff" opacity=".15"/>`;
+  // palabras desbloqueadas: objetos dibujados en el planeta (se pueden tocar)
+  const SLOTS = [[150,178],[250,178],[200,248],[128,238],[272,238],[200,150]];
+  WORDS.filter(o => o.p === pl.id && state.words.includes(o.w)).slice(0, 6).forEach((o, i) => {
+    const [x, y] = SLOTS[i], nueva = opts.newWord === o.w;
+    s += `<g class="pw${nueva ? ' grow' : ''}" data-w="${o.w}" transform="translate(${x} ${y})" style="cursor:pointer">
+      <circle r="21" fill="#fff" opacity=".22"/>${o.e ? `<text y="9" text-anchor="middle" font-size="26">${o.e}</text>` : TABLE_SVG}
+      <text y="36" text-anchor="middle" font-family="Andika, sans-serif" font-weight="700" font-size="14" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3" paint-order="stroke">${o.w}</text></g>`;
+  });
   if (stage === 0) s += `<text x="${cx}" y="${cy-R-16}" text-anchor="middle" font-family="Baloo 2, sans-serif" font-size="18" fill="#b3acdf">Tu planeta crecerá aquí</text>`;
   return s + '</svg>';
 }
+function wirePlanetWords(root){ root.querySelectorAll('.pw[data-w]').forEach(g => g.addEventListener('click', () => { sfx.tap(); sayUnit(g.dataset.w); })); }
 
 /* ================= STARFIELD ================= */
 (function stars(){
@@ -741,6 +828,7 @@ function planetSVG(stage, popLast = false){
 
 /* ================= HOME ================= */
 function pProgress(){ return SYL.filter(s => stars(s) >= 2).length; }
+function ps(){ return state.ps[curPlanet().id]; }
 /* Racha viva: cuenta si la última misión fue hoy o ayer. */
 function streakNow(){ const st = state.streak; if (!st || !st.last) return 0; const g = daysBetween(st.last, today()); return g <= 1 ? st.n : 0; }
 function streakHTML(){
@@ -748,7 +836,9 @@ function streakHTML(){
   return `<span class="streak-n">${n}</span><span class="streak-l"><b>${n === 1 ? 'día' : 'días'}</b>seguidos</span><span class="streak-dots">${Array.from({length:7}, (_, i) => `<i class="${i < Math.min(n, 7) ? 'on' : ''}"></i>`).join('')}</span>`;
 }
 function renderHome(){
-  $('#homePlanet').innerHTML = planetSVG(state.sessions);
+  const pl = curPlanet();
+  $('#homePlanet').innerHTML = planetSVG(ps().sessions, false, pl); wirePlanetWords($('#homePlanet'));
+  $('.planet-name').textContent = pl.name; $('.planet-name').style.borderColor = pl.col[1];
   const sleep = limitReached();
   const kid = curProfile();
   $('#kidChip').innerHTML = `${robotSVG({mood:'happy'})}<span>${esc(kid.name)}</span>`;
@@ -758,12 +848,12 @@ function renderHome(){
     ? '<div class="recharge"><div class="battery"><i></i></div><p>Misiones de hoy completas.<b>¡Vuelve mañana!</b></p></div>'
     : '<button class="play-btn" id="playBtn">¡A la misión!</button>';
   const pb = $('#playBtn'); if (pb) pb.onclick = startSession;
-  $('#sylRow').innerHTML = SYL.map(s => `<button class="syl-chip${faded(s)?' off':''}" data-s="${s}" aria-label="${s}, ${stars(s)} estrellas"><span class="s">${s}</span><span class="stars">${starsHTML(stars(s))}</span></button>`).join('');
+  $('#sylRow').innerHTML = pl.syl.map(s => `<button class="syl-chip${faded(s)?' off':''}" data-s="${s}" aria-label="${s}, ${stars(s)} estrellas"><span class="s">${s}</span><span class="stars">${starsHTML(stars(s))}</span></button>`).join('');
   $('#sylRow').querySelectorAll('.syl-chip').forEach(b => b.onclick = () => {
     sfx.tap(); const s = b.dataset.s;
     if (faded(s)) speak(`${s}. ¡La sílaba ${s} se apagó! Rescátala en la próxima misión.`); else sayUnit(s);
   });
-  const ws = WORDS.filter(o => state.words.includes(o.w));
+  const ws = WORDS.filter(o => o.p === pl.id && state.words.includes(o.w));
   $('#wordsRow').innerHTML = ws.length
     ? ws.map(o => `<button class="word-chip" data-w="${o.w}">${wordIcon(o)}${o.w}</button>`).join('')
     : '<span class="words-empty">Las palabras que desbloquees aparecerán aquí.</span>';
@@ -771,9 +861,15 @@ function renderHome(){
   const sn = streakNow();
   $('#streak').innerHTML = sn ? `<div class="streak" aria-label="${sn} días seguidos">${streakHTML()}</div>` : '';
   const n = pProgress();
-  $('#pPlanet').innerHTML = n >= 5
-    ? '<div class="mini-planet">P</div><div><b>¡Planeta P desbloqueado!</b><br>Muy pronto</div>'
-    : `<div class="mini-planet locked">P</div><div><b>Planeta P</b><br>${n} de 5 sílabas con ★★</div>`;
+  if (!pUnlocked()) $('#pPlanet').innerHTML = `<div class="mini-planet locked">P</div><div><b>Planeta P</b><br>${n} de 5 sílabas con ★★</div>`;
+  else {
+    const nP = PLANETS.P.syl.filter(s => stars(s) >= 2).length;
+    $('#pPlanet').innerHTML = `<div class="planet-switch">${planetsOpen().map(k => `<button class="mini-planet pl-${k}${k === pl.id ? ' now' : ''}" data-pl="${k}" aria-label="Viajar al ${PLANETS[k].name}">${k}</button>`).join('')}</div>
+      <div><b>${bossReady(pl) ? '¡Alerta! Un meteorito va hacia la Tierra' : 'Toca un planeta para viajar'}</b><br>${nP >= 5 ? 'Siguiente planeta: muy pronto' : `Siguiente planeta: ${nP} de 5 de la P con ★★`}</div>`;
+    $('#pPlanet').querySelectorAll('[data-pl]').forEach(btn => btn.onclick = () => {
+      sfx.tap(); state.planet = btn.dataset.pl; save(); renderHome(); speak(`¡Vamos al ${PLANETS[btn.dataset.pl].name}!`);
+    });
+  }
 }
 $('#homeRobot').onclick = () => {
   sfx.tap();
@@ -787,8 +883,8 @@ function renderWho(){
   const w = $('#who');
   w.innerHTML = `<h2 class="who-title">¿Quién juega?</h2>
     <div class="who-grid">${store.profiles.map(p => {
-      const n = SYL.reduce((a, s) => a + (p.state.syl[s].heard >= 3 ? 1 : 0), 0);
-      return `<button class="who-card" data-id="${p.id}">${robotSVG({acc:p.state.owned, color:p.state.color})}<span class="who-name">${esc(p.name)}</span><span class="who-stars">${n} de 5 sílabas con ★</span></button>`;
+      const n = ALL_SYL.reduce((a, s) => a + ((p.state.syl[s] || {}).heard >= 3 ? 1 : 0), 0);
+      return `<button class="who-card" data-id="${p.id}">${robotSVG({acc:p.state.owned, color:p.state.color})}<span class="who-name">${esc(p.name)}</span><span class="who-stars">${n} ${n === 1 ? 'sílaba' : 'sílabas'} con ★</span></button>`;
     }).join('')}
     <button class="who-card who-add" id="whoAdd"><b>+</b>Nuevo jugador</button></div>
     <p class="who-note">Cada niño tiene su propio robot, su planeta y sus estrellas.</p>`;
@@ -826,15 +922,20 @@ let S = null;
 const alive = my => S === my && my.alive;
 
 function missionOfDay(){
-  const off = SYL.filter(faded);
+  const pl = curPlanet();
+  if (bossReady(pl)) return {id:'defensa', name:'Defensa de la Tierra', boss:true,
+    intro:'¡Alerta! Un meteorito gigante va hacia la Tierra. Arma la sílaba que te diga y dispara. ¡Cinco disparos y la salvamos!'};
+  const off = poolSyl().filter(faded);
   if (off.length) return {id:'rescate', name:'Rescate de robots', faded:off,
     intro:`¡Oh, no! La sílaba ${joinY(off)} se apagó. Unos robots piden rescate.`};
-  const id = ['tablero','asteroides','rescate','radar'][state.sessions % 4];
+  const rot = ['tablero','asteroides','rescate','radar'].concat(state.ps[pl.id].boss ? ['defensa'] : []);   // la Defensa vuelve de vez en cuando
+  const id = rot[state.sessions % rot.length];
   return {
     asteroides:{id, name:'Lluvia de asteroides', intro:'¡Cuidado, asteroides! Dispara a la sílaba que escuches.'},
     rescate:{id, name:'Rescate de robots', intro:'¡Unos robots necesitan ayuda! Rescata al que te llame.'},
     radar:{id, name:'Radar de sílabas', intro:'¡El radar encontró cosas! Cuenta sus partes.'},
     tablero:{id, name:'Tablero de disparo', intro:'¡Una nave gruñona lanza meteoritos con letras! Toca en tu tablero lo que escuches y dispara.'},
+    defensa:{id, name:'Defensa de la Tierra', intro:'¡Otro meteorito va hacia la Tierra! Arma las sílabas y dispara.'},
   }[id];
 }
 
@@ -847,12 +948,14 @@ function startSession(){
   $('#sayAgain').innerHTML = SPK;
   $('#stage').innerHTML = ''; $('#stage').className = 'stage';
   setBubble('¡Vamos!');
+  $('#game').classList.toggle('on-P', curPlanet().id === 'P');
   show('game'); renderEnergy(); renderFlights();
   runSession(S);
 }
 
 async function runSession(my){
-  await landing(my, 'Planeta M', '¡Aterrizamos en el planeta M! Sílabo necesita energía de sílabas.');
+  const pl = curPlanet(); my.planet = pl.id;
+  await landing(my, pl.name, pl.intro);
   for (let f = 0; f < 3; f++){
     if (!alive(my)) return;
     my.flight = f; my.cells = 0; renderEnergy(); renderFlights();
@@ -879,8 +982,8 @@ function nextTarget(my, prefer = []){
     const fresh = prefer.filter(s => !my.heard.has(s) && s !== my.prev);
     if (fresh.length) t = fresh[0];
     else {
-      const pool = SYL.filter(s => s !== my.prev);
-      const w = pool.map(s => { const r = state.syl[s]; return 1 + Math.min(r.miss,4) + (3 - stars(s))*2 + (faded(s)?4:0) + (my.heard.has(s)?0:2); });
+      const pool = poolSyl().filter(s => s !== my.prev), home = curPlanet().syl;
+      const w = pool.map(s => { const r = state.syl[s]; return (1 + Math.min(r.miss,4) + (3 - stars(s))*2 + (faded(s)?4:0) + (my.heard.has(s)?0:2)) * (home.includes(s) ? 2 : 1); });
       let x = Math.random()*w.reduce((a,b)=>a+b,0);
       t = pool.find((s,i) => (x -= w[i]) < 0) || pool[0];
     }
@@ -944,6 +1047,7 @@ async function flightMission(my){
   const used = new Set();
   for (let i = 0; i < 5; i++){
     if (!alive(my)) return;
+    if (m.id === 'defensa'){ await defensaRound(my); return; }
     if (m.id === 'radar') await radarRound(my, used);
     else if (m.id === 'tablero') await tableroRound(my, ['letra','silaba','silaba','palabra','palabra'][i], used);
     else { const t = nextTarget(my, m.faded || []); await pickRound(my, t, MODES[m.id], (m.faded||[]).includes(t)); }
@@ -982,7 +1086,7 @@ function pickRound(my, target, mode, isFaded = false){
     const ro = new ResizeObserver(() => { W = stage.clientWidth; H = stage.clientHeight; }); ro.observe(stage);
     let gun = null;
     if (mode.id === 'asteroides'){ gun = document.createElement('div'); gun.className = 'gun'; gun.innerHTML = MINI_ROCKET('#eef0fb').replace('<svg', '<svg style="width:100%;height:100%;transform:rotate(-90deg)"'); stage.appendChild(gun); }
-    const opts = shuffle([target, ...sample(SYL.filter(x => x !== target), mode.n - 1)]);
+    const opts = shuffle([target, ...distract(target, mode.n - 1)]);
     const items = opts.map((s, i) => {
       const el = document.createElement('button'); el.className = 'item' + (isFaded && s === target ? ' faded' : '');
       el.innerHTML = mode.html(s); el.setAttribute('aria-label', s); stage.appendChild(el);
@@ -1042,19 +1146,20 @@ function laser(stage, x1, y1, x2, y2){
   stage.appendChild(l); setTimeout(() => l.remove(), 320);
 }
 
-/* ---------- ensamblar m + vocal ---------- */
+/* ---------- ensamblar consonante + vocal (en el planeta P: m o p) ---------- */
 function assembleRound(my, target){
   return new Promise(resolve => {
     const stage = $('#stage'); stage.className = 'stage mode-assemble';
     setBubble('¡Arma…');
+    const CONS = consInPlay();
     stage.innerHTML = `<div class="assemble">
       <div class="ship" id="ship"><div class="socket" data-k="c"></div><span class="plus-sign">+</span><div class="socket" data-k="v"></div>
         <div class="lights">${'<i></i>'.repeat(7)}</div></div>
-      <div class="tray"><div class="slot" data-home="m"><button class="tile cons" data-l="m">m</button></div><span class="gap"></span>
+      <div class="tray">${CONS.map(c => `<div class="slot" data-home="${c}"><button class="tile cons" data-l="${c}">${c}</button></div>`).join('')}<span class="gap"></span>
         ${VOW.map(v => `<div class="slot" data-home="${v}"><button class="tile vow" data-l="${v}">${v}</button></div>`).join('')}</div></div>`;
     const ship = $('#ship'), sockC = stage.querySelector('[data-k="c"]'), sockV = stage.querySelector('[data-k="v"]');
     let placedC = null, placedV = null, errors = 0, done = false, lastTouch = Date.now();
-    const sound = l => l === 'm' ? 'mmm' : l;
+    const isCons = l => CONS.includes(l);
     function home(tile){ return stage.querySelector(`.slot[data-home="${tile.dataset.l}"]`); }
     function place(tile, sock){
       sock.appendChild(tile); tile.style.transform = ''; sock.classList.add('filled');
@@ -1067,7 +1172,7 @@ function assembleRound(my, target){
     }
     async function check(){
       if (!placedC || !placedV || done) return;
-      const formed = 'm' + placedV.dataset.l;
+      const formed = placedC.dataset.l + placedV.dataset.l;
       if (formed === target){
         done = true; ship.classList.add('lit'); sfx.good();
         markPracticed(target, errors === 0, my);
@@ -1078,9 +1183,10 @@ function assembleRound(my, target){
         errors++; state.syl[target].miss++; save();
         ship.classList.add('lit'); await speak(formed, .8); ship.classList.remove('lit');
         if (!alive(my)) return;
-        sfx.spark(); const v = placedV; v.classList.add('back'); sendBack(v); setTimeout(() => v.classList.remove('back'), 320);
+        sfx.spark();
+        [placedC.dataset.l !== target[0] ? placedC : null, placedV.dataset.l !== target[1] ? placedV : null].filter(Boolean).forEach(t => { t.classList.add('back'); sendBack(t); setTimeout(() => t.classList.remove('back'), 320); });
         speak(`¡Ups, chispa! Eso dice ${formed}. ¡Arma ${target}!`);
-        if (errors >= 2) stage.querySelector(`.tile[data-l="${target[1]}"]`).classList.add('hint');
+        if (errors >= 2) [target[0], target[1]].forEach(l => stage.querySelector(`.tile[data-l="${l}"]`).classList.add('hint'));
       }
     }
     stage.querySelectorAll('.tile').forEach(tile => {
@@ -1099,16 +1205,17 @@ function assembleRound(my, target){
       const end = e => {
         if (!dragging) return; dragging = false; tile.classList.remove('drag');
         if (done) return;
-        const isC = tile.dataset.l === 'm'; const sock = isC ? sockC : sockV;
+        const isC = isCons(tile.dataset.l); const sock = isC ? sockC : sockV;
         if (!moved){
           sayUnit(tile.dataset.l);
           if (tile.parentElement === sock) return;
+          if (isC && placedC) sendBack(placedC);
           if (!isC && placedV) sendBack(placedV);
           place(tile, sock); return;
         }
         const r = sock.getBoundingClientRect();
         const inside = e.clientX > r.left - 30 && e.clientX < r.right + 30 && e.clientY > r.top - 30 && e.clientY < r.bottom + 30;
-        if (inside && tile.parentElement !== sock){ if (!isC && placedV) sendBack(placedV); place(tile, sock); sayUnit(tile.dataset.l); }
+        if (inside && tile.parentElement !== sock){ if (isC && placedC) sendBack(placedC); if (!isC && placedV) sendBack(placedV); place(tile, sock); sayUnit(tile.dataset.l); }
         else { tile.classList.add('back'); tile.style.transform = ''; setTimeout(() => tile.classList.remove('back'), 320); }
       };
       tile.addEventListener('pointerup', end); tile.addEventListener('pointercancel', end);
@@ -1116,7 +1223,7 @@ function assembleRound(my, target){
     const idle = setInterval(() => {
       if (done) return;
       if (Date.now() - lastTouch > 8000){ lastTouch = Date.now(); speak(my.prompt);
-        if (!placedC) stage.querySelector('.tile[data-l="m"]').classList.add('hint'); }
+        if (!placedC) stage.querySelector(`.tile[data-l="${target[0]}"]`).classList.add('hint'); }
     }, 1000);
     my.cleanup = () => clearInterval(idle);
     setTimeout(() => { if (alive(my)) prompt(my, `¡Arma ${target}!`); }, 250);
@@ -1128,17 +1235,15 @@ const ENEMY = `<svg viewBox="0 0 150 80" aria-hidden="true"><ellipse cx="75" cy=
   <path d="M40 40 Q75 -6 110 40 Z" fill="#c9b5ff" opacity=".85"/><circle cx="62" cy="28" r="6" fill="#1b2050"/><circle cx="88" cy="28" r="6" fill="#1b2050"/>
   <path d="M56 19 l12 5 M94 19 l-12 5" stroke="#1b2050" stroke-width="3" stroke-linecap="round"/>
   <circle cx="30" cy="50" r="5" fill="#ff7a59" class="blink"/><circle cx="75" cy="56" r="5" fill="#ffd447" class="blink"/><circle cx="120" cy="50" r="5" fill="#ff7a59" class="blink"/></svg>`;
-const LETTERS = ['a','e','i','o','u','m'];
-const SIGHT = ['mamá','mimo','mesa','mano','mono','mamut'];
-const sayOf = x => x === 'm' ? 'mmm' : x;
+const sayOf = x => sayOfUnit(x);
 function tableroRound(my, kind, used){
   return new Promise(resolve => {
     let target, pool;
-    if (kind === 'letra'){ pool = LETTERS; target = shuffle(pool.filter(x => !used.has(x)))[0]; }
-    else if (kind === 'palabra'){ pool = SIGHT; target = shuffle(pool.filter(x => !used.has(x)))[0]; }
-    else { pool = SYL; target = nextTarget(my); }
+    if (kind === 'letra'){ pool = [...VOW, ...consInPlay()]; target = shuffle(pool.filter(x => !used.has(x)))[0]; }
+    else if (kind === 'palabra'){ pool = curPlanet().sight; target = shuffle(pool.filter(x => !used.has(x)))[0]; }
+    else { pool = poolSyl(); target = nextTarget(my); }
     used.add(target);
-    const opts = shuffle([target, ...sample(pool.filter(x => x !== target), 2)]);
+    const opts = shuffle([target, ...(kind === 'silaba' ? distract(target, 2) : sample(pool.filter(x => x !== target), 2))]);
     const spoken = sayOf(target);
     const stage = $('#stage'); stage.className = 'stage mode-tablero';
     setBubble('¡Dispara a…');
@@ -1193,10 +1298,93 @@ function tableroRound(my, kind, used){
   });
 }
 
+/* ---------- Defensa de la Tierra: jefe final de cada planeta ----------
+   Un meteorito gigante baja hacia la Tierra. El niño arma la sílaba dictada (consonante + vocal) y dispara.
+   5 aciertos lo destruyen. Los errores solo pausan; si se acerca, el escudo lo empuja y llega una pista. */
+const CRACKS = ['M95 20 L84 62 L102 80', 'M30 70 L70 90 L64 120', 'M160 70 L124 96 L136 132', 'M70 170 L92 130 L118 150', 'M100 95 L60 40 M100 95 L150 40 M100 95 L100 175'];
+function defensaRound(my){
+  return new Promise(resolve => {
+    const stage = $('#stage'); stage.className = 'stage mode-tablero';
+    setBubble('¡Salva la Tierra!');
+    const CONS = consInPlay();
+    stage.innerHTML = `<div class="defensa">
+      <div class="earth"></div>
+      <div class="boss-hp">${'<i></i>'.repeat(5)}</div>
+      <div class="boss" id="boss"><svg viewBox="0 0 200 200">${CRACKS.map(d => `<path class="crack" d="${d}" stroke="#ffd447" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}
+        <circle cx="62" cy="58" r="14" fill="#000" opacity=".18"/><circle cx="140" cy="128" r="18" fill="#000" opacity=".18"/><circle cx="120" cy="52" r="8" fill="#000" opacity=".15"/></svg></div>
+      <div class="syl-built" id="cannon"><span id="bC"></span><span id="bV"></span></div>
+      <div class="dkeys"><div class="row">${CONS.map(c => `<button class="bkey cons" data-l="${c}">${c}</button>`).join('')}</div>
+        <div class="row">${VOW.map(v => `<button class="bkey" data-l="${v}">${v}</button>`).join('')}</div></div></div>`;
+    const boss = $('#boss'), cannon = $('#cannon'), bC = $('#bC'), bV = $('#bV');
+    const small = innerWidth <= 720;
+    let hits = 0, y = 0, pausedUntil = performance.now() + 1500, last = performance.now(), raf = 0, busy = false, errors = 0, target = null, c = '', v = '';
+    const y0 = 40;
+    function yMax(){ return Math.max(y0 + 60, stage.clientHeight - (small ? 176 + 58 + 130 : 226 + 70 + 175)); }   // se detiene sobre la sílaba armada
+    function place(){ boss.style.transform = `translate(-50%, ${y0 + y}px)`; }
+    function frame(t){
+      const dt = Math.min(.05, (t - last)/1000); last = t;
+      const span = yMax() - y0;
+      if (!busy && t > pausedUntil) y += span/16*dt;           // ~16 s hasta el escudo
+      if (!busy && y >= span) shield();
+      place(); raf = requestAnimationFrame(frame);
+    }
+    function shield(){
+      const fx = document.createElement('div'); fx.className = 'shield-fx'; fx.style.bottom = small ? '240px' : '300px';
+      stage.querySelector('.defensa').appendChild(fx); setTimeout(() => fx.remove(), 1250);
+      sfx.pop(); y = (yMax() - y0)*.3; pausedUntil = performance.now() + 1800;
+      hintKeys(); speak(`¡Escudo! Te ayudo. Arma ${target}: ${sayOfUnit(target[0])}, ${target[1]}. ${target}.`);
+    }
+    function hintKeys(){ [target[0], target[1]].forEach(l => stage.querySelector(`.bkey[data-l="${l}"]`).classList.add('hint')); }
+    function clearBuilt(){ c = v = ''; bC.textContent = bV.textContent = ''; bC.className = bV.className = ''; stage.querySelectorAll('.bkey.hint').forEach(k => k.classList.remove('hint')); }
+    function next(){
+      clearBuilt(); errors = 0; target = nextTarget(my, curPlanet().syl.slice());
+      setTimeout(() => { if (alive(my)) prompt(my, hits === 0 ? `¡Arma ${target} y dispara!` : `¡Ahora ${target}!`); }, 200);
+    }
+    async function fire(){
+      const formed = c + v;
+      if (formed === target){
+        busy = true; sfx.good();
+        const sr = stage.getBoundingClientRect(), cr = cannon.getBoundingClientRect(), m = boss.getBoundingClientRect();
+        laser(stage, cr.left + cr.width/2 - sr.left, cr.top - sr.top, m.left + m.width/2 - sr.left, m.top + m.height/2 - sr.top);
+        sparkles(stage, m.left + m.width/2 - sr.left, m.top + m.height/2 - sr.top);
+        boss.classList.remove('hit'); void boss.offsetWidth; boss.classList.add('hit');
+        boss.querySelectorAll('.crack')[hits].classList.add('on');
+        stage.querySelectorAll('.boss-hp i')[hits].classList.add('on');
+        hits++; markPracticed(target, errors === 0, my);
+        y = Math.max(0, y - (yMax() - y0)*.15);             // cada disparo lo empuja hacia arriba
+        const sp = speak(hits < 5 ? `¡${target}! ¡Le diste!` : `¡${target}! ¡Lo destruiste!`);
+        const fl = flyToEnergy(my, boss);
+        await Promise.all([sp, fl]); if (!alive(my)) return;
+        if (hits >= 5){
+          const fx = document.createElement('div'); fx.className = 'boss-flash'; stage.appendChild(fx);
+          sfx.launch(); boss.classList.add('boom'); boss.style.transform += ' scale(2)';
+          my.bossWon = curPlanet().id;
+          await speak('¡Salvaste la Tierra! ¡Eres un héroe del espacio!'); cancelAnimationFrame(raf); await wait(400); resolve(); return;
+        }
+        busy = false; pausedUntil = performance.now() + 700; next();
+      } else {
+        errors++; if (state.syl[target]) { state.syl[target].miss++; save(); }
+        sfx.spark(); pausedUntil = performance.now() + 2000;     // el error nunca acerca el meteorito
+        await speak(`¡Ups, chispa! Eso dice ${formed}. ¡Arma ${target}!`);
+        clearBuilt(); if (errors >= 2) hintKeys();
+      }
+    }
+    stage.querySelectorAll('.bkey').forEach(k => k.addEventListener('pointerdown', e => {
+      e.preventDefault(); if (busy || !alive(my) || !target) return;
+      const l = k.dataset.l; sfx.tap(); sayUnit(l);
+      if (CONS.includes(l)){ c = l; bC.textContent = l; bC.className = 'full'; }
+      else { v = l; bV.textContent = l; bV.className = 'full'; }
+      if (c && v) setTimeout(fire, 350);
+    }));
+    my.cleanup = () => cancelAnimationFrame(raf);
+    place(); raf = requestAnimationFrame(frame); next();
+  });
+}
+
 /* ---------- radar: contar sílabas ---------- */
 function radarRound(my, used){
   return new Promise(resolve => {
-    const pool = RADAR.filter(r => !used.has(r.w)); const item = pool[Math.floor(Math.random()*pool.length)]; used.add(item.w);
+    const pool = curPlanet().radar.filter(r => !used.has(r.w)); const item = pool[Math.floor(Math.random()*pool.length)]; used.add(item.w);
     const n = item.s.length;
     const stage = $('#stage'); stage.className = 'stage mode-radar';
     setBubble('¿Cuántas partes?');
@@ -1236,6 +1424,11 @@ const PICS = {
   mi: [['miel','🍯'], ['micrófono','🎤']],
   mo: [['moto','🛵'], ['mono','🐒'], ['mochila','🎒']],
   mu: [['murciélago','🦇'], ['muela','🦷'], ['muñeca','🪆']],
+  pa: [['pato','🦆'], ['pan','🍞'], ['papá','👨']],
+  pe: [['pera','🍐'], ['pez','🐟'], ['perro','🐕']],
+  pi: [['piña','🍍'], ['pizza','🍕'], ['pie','🦶']],
+  po: [['pollito','🐥'], ['policía','👮']],
+  pu: [['pulpo','🐙'], ['puma','🐆'], ['puerta','🚪']],
 };
 const pickPic = s => PICS[s][Math.floor(Math.random()*PICS[s].length)];
 function ghostInfo(mode){
@@ -1269,11 +1462,11 @@ function flightRace(my){
 function introSolo(my, resolve){
   const stage = $('#stage'), g = ghostInfo('solo');
   stage.innerHTML = `<div class="race-intro">
-    <div class="card" style="font-size:min(90px,14vh)">mo</div>
-    <div class="pics demo">${['🍎','🛵','🍯'].map((e,i) => `<span class="pic-btn${i === 1 ? ' right' : ''}">${e}</span>`).join('')}</div>
+    <div class="card" style="font-size:min(90px,14vh)">${curPlanet().id === 'P' ? 'pa' : 'mo'}</div>
+    <div class="pics demo">${(curPlanet().id === 'P' ? ['✋','🦆','🍐'] : ['🍎','🛵','🍯']).map((e,i) => `<span class="pic-btn${i === 1 ? ' right' : ''}">${e}</span>`).join('')}</div>
     <button class="big-btn" id="raceGo">¡Listo!</button></div>`;
   setBubble('Lee y toca el dibujo');
-  prompt(my, `Lee la sílaba y toca el dibujo que empieza igual. Mo... ¡moto!` + (g.real ? ` ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : ''));
+  prompt(my, `Lee la sílaba y toca el dibujo que empieza igual. ${curPlanet().id === 'P' ? 'Pa... ¡pato!' : 'Mo... ¡moto!'}` + (g.real ? ` ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : ''));
   $('#raceGo').onclick = async () => { await countdown(my, false); if (alive(my)) runRace(my, 'solo', g, resolve); };
 }
 function introJuntos(my, resolve){
@@ -1301,7 +1494,7 @@ function runRace(my, mode, g, resolve){
       : `<div class="race-btns"><button class="help-btn" id="rHelp" aria-label="Ayuda: escuchar la sílaba">${SPK}</button><button class="ok-btn" id="rOk">✓ ¡La leyó!</button></div>`}
     <div class="race-count">Sílabas: <b id="rCount">0</b></div></div>`;
   setBubble(solo ? 'Lee y toca el dibujo' : '¡Lee en voz alta!');
-  const pool = SYL.filter(s => stars(s) >= 1); const deck = pool.length >= 3 ? pool : SYL;
+  const pool = poolSyl().filter(s => stars(s) >= 1); const deck = pool.length >= 3 ? pool : poolSyl();
   let count = 0, cur = null, shownAt = 0, helped = false, erred = false, lastOk = 0, over = false;
   const t0 = performance.now(); let raf = 0;
   const laneW = () => $('#rMe').parentElement.clientWidth - 64 - 26;
@@ -1310,7 +1503,7 @@ function runRace(my, mode, g, resolve){
     cur = s; helped = false; erred = false; shownAt = performance.now();
     const c = $('#rCard'); c.textContent = s; c.classList.remove('flip'); void c.offsetWidth; c.classList.add('flip');
     if (solo){
-      const others = sample(SYL.filter(x => x !== s), 2);
+      const others = distract(s, 2);
       const opts = shuffle([[s, ...pickPic(s)], ...others.map(o => [o, ...pickPic(o)])]);
       $('#pics').innerHTML = opts.map(([syl, word, emo]) => `<button class="pic-btn" data-s="${syl}" data-w="${word}" aria-label="${word}">${emo}</button>`).join('');
       $('#pics').querySelectorAll('.pic-btn').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); tapPic(b); }));
@@ -1405,6 +1598,7 @@ async function launch(my){
 function finishSession(my){
   my.alive = false; S = null;
   state.sessions++; state.last = today();
+  const pl = PLANETS[my.planet] || curPlanet(); state.ps[pl.id].sessions++;
   if (state.daily.date !== today()) state.daily = {date:today(), n:0};
   state.daily.n++;
   // Racha de días: sube un día por día con al menos una misión; si se corta, vuelve a empezar sin regaño.
@@ -1412,29 +1606,41 @@ function finishSession(my){
   if (gap !== 0){ st.n = gap === 1 ? st.n + 1 : 1; st.last = today(); st.best = Math.max(st.best || 0, st.n); }
   const newWords = WORDS.filter(o => !state.words.includes(o.w) && Object.entries(o.need).every(([s, n]) => stars(s) >= n));
   newWords.forEach(o => state.words.push(o.w));
-  const pNow = pProgress() >= 5 && !state.pSeen; if (pNow) state.pSeen = true;
+  const pNow = pProgress() >= 5 && !state.pSeen; if (pNow){ state.pSeen = true; state.planet = 'P'; }
+  const bossNow = my.bossWon === pl.id && !state.ps[pl.id].boss; if (my.bossWon) state.ps[pl.id].boss = true;
+  const nextSoon = pl.id === 'P' && PLANETS.P.syl.every(s => stars(s) >= 2) && !state.sSeen; if (nextSoon) state.sSeen = true;
   save();
   show('end');
-  const practiced = SYL.filter(s => my.heard.has(s) || my.read.has(s));
+  const practiced = ALL_SYL.filter(s => my.heard.has(s) || my.read.has(s));
   const panels = [];
-  const stage = state.sessions;
+  const stage = state.ps[pl.id].sessions;
   const news = PLANET_NEWS[Math.min(stage, 7)] || '¡Tu planeta brilla más!';
-  const said = my.read.size ? `Hoy leíste ${joinY(SYL.filter(s => my.read.has(s)))}.` : practiced.length ? `Hoy encontraste ${joinY(practiced)}.` : '';
+  const said = my.read.size ? `Hoy leíste ${joinY(ALL_SYL.filter(s => my.read.has(s)))}.` : practiced.length ? `Hoy encontraste ${joinY(practiced)}.` : '';
+  if (bossNow) panels.push({
+    html:`<h2 class="end-title">¡Salvaste la Tierra!</h2><div class="end-planet">${planetSVG(stage, false, pl)}</div>
+      <p class="end-sub">Tu ${pl.name} ganó una bandera y un escudo de héroe.</p>`,
+    say:`¡Salvaste la Tierra! Tu ${pl.name} ganó una bandera de héroe.`
+  });
   panels.push({
     html:`<h2 class="end-title">¡Misión cumplida!</h2>
-      <div class="end-planet">${planetSVG(stage, stage <= 7)}</div>
+      <div class="end-planet">${planetSVG(stage, stage <= 7, pl)}</div>
       <p class="end-sub">${news}</p>
       ${streakNow() >= 2 ? `<div class="streak">${streakHTML()}</div>` : ''}
-      <div class="chips">${SYL.map(s => `<button class="syl-chip" data-s="${s}"><span class="s">${s}</span><span class="stars">${starsHTML(stars(s))}</span></button>`).join('')}</div>`,
+      <div class="chips">${pl.syl.map(s => `<button class="syl-chip" data-s="${s}"><span class="s">${s}</span><span class="stars">${starsHTML(stars(s))}</span></button>`).join('')}</div>`,
     say:`¡Misión cumplida! ${said} ${news}` + (streakNow() >= 2 ? ` ¡Llevas ${streakNow()} días seguidos!` : '')
   });
   newWords.forEach(o => panels.push({
-    html:`<p class="end-sub">Palabra nueva en tu planeta</p><button class="big-word" data-w="${o.w}">${wordIcon(o)}${o.w}</button><p class="end-sub">Tócala para escucharla</p>`,
+    html:`<p class="end-sub">Palabra nueva en tu planeta</p><button class="big-word" data-w="${o.w}">${wordIcon(o)}${o.w}</button>
+      ${o.p === pl.id ? `<div class="end-planet small">${planetSVG(stage, false, pl, {newWord:o.w})}</div>` : ''}<p class="end-sub">Tócala para escucharla</p>`,
     say:`¡Palabra nueva en tu planeta: ${o.w}!`
   }));
   if (pNow) panels.push({
-    html:`<div class="mini-planet" style="width:140px;height:140px;font-size:70px">P</div><h2 class="end-title">¡Planeta P desbloqueado!</h2><p class="end-sub">Leíste las cinco sílabas de la M. ¡Pronto viajaremos al planeta P!</p>`,
-    say:'¡Increíble! Leíste las cinco sílabas de la M. ¡Desbloqueaste el planeta P!'
+    html:`<div class="mini-planet pl-P" style="width:140px;height:140px;font-size:70px">P</div><h2 class="end-title">¡Planeta P desbloqueado!</h2><p class="end-sub">Leíste las cinco sílabas de la M. ¡Ya puedes viajar al planeta P: pa, pe, pi, po, pu!</p>`,
+    say:'¡Increíble! Leíste las cinco sílabas de la M. ¡Ya puedes viajar al planeta P!'
+  });
+  if (nextSoon) panels.push({
+    html:`<div class="mini-planet locked" style="width:140px;height:140px;font-size:70px">S</div><h2 class="end-title">¡Leíste toda la P!</h2><p class="end-sub">Sílabo ya ve el siguiente planeta en su mapa. ¡Muy pronto!</p>`,
+    say:'¡Leíste las cinco sílabas de la P! Sílabo ya ve el siguiente planeta en su mapa.'
   });
   panels.push({reward:true});
   panels.push(limitReached() ? {
@@ -1449,7 +1655,7 @@ function finishSession(my){
     if (p.final) return renderMore();
     endEl.innerHTML = `<div class="end-panel">${p.html}<button class="next-btn" id="endNext">${p.last ? 'Ir a mi planeta' : 'Siguiente'} <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l10 7-10 7z"/></svg></button></div>`;
     endEl.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.s); });
-    endEl.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.w); });
+    endEl.querySelectorAll('[data-w]').forEach(b => b.addEventListener('click', () => { sfx.tap(); sayUnit(b.dataset.w); }));
     if (i === 0) sfx.fanfare();
     speak(p.say);
     $('#endNext').onclick = () => { sfx.tap(); if (p.last){ renderHome(); show('home'); try { wakeLock && wakeLock.release(); } catch (e) {} } else { i++; render(); } };
@@ -1508,9 +1714,9 @@ function openAdult(){
   const races = Object.entries(state.races).sort().slice(-7);
   a.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-label="Panel del adulto">
     <h2>Panel del adulto</h2>
-    <p>Jugador: <b>${esc(curProfile().name)}</b> · Sesiones completas: <b>${state.sessions}</b> · Hoy: <b>${sessionsToday()}</b> · Racha: <b>${streakNow()}</b> (mejor: ${state.streak.best || 0})${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
+    <p>Jugador: <b>${esc(curProfile().name)}</b> · Sesiones completas: <b>${state.sessions}</b> · Planetas: <b>${planetsOpen().map(k => k + (state.ps[k].boss ? ' 🏁' : '')).join(', ')}</b> · Hoy: <b>${sessionsToday()}</b> · Racha: <b>${streakNow()}</b> (mejor: ${state.streak.best || 0})${state.dayShift ? ` · <span class="muted-note">Día de prueba +${state.dayShift}</span>` : ''}</p>
     <table><thead><tr><th>Sílaba</th><th>Estrellas</th><th>Reconoce al oír</th><th>Lee sola</th><th>Lee &lt; 2 s</th><th>Último día</th></tr></thead>
-    <tbody>${SYL.map(s => { const r = state.syl[s]; return `<tr><td>${s}</td><td style="color:#c08a00">${'★'.repeat(stars(s)) || '–'}</td><td>${r.heard}/3</td><td>${r.read}/2</td><td>${r.fast}/2</td><td>${r.last ? r.last.slice(5) : '–'}${faded(s) ? ' (apagada)' : ''}</td></tr>`; }).join('')}</tbody></table>
+    <tbody>${planetsOpen().flatMap(k => PLANETS[k].syl).map(s => { const r = state.syl[s]; return `<tr><td>${s}</td><td style="color:#c08a00">${'★'.repeat(stars(s)) || '–'}</td><td>${r.heard}/3</td><td>${r.read}/2</td><td>${r.fast}/2</td><td>${r.last ? r.last.slice(5) : '–'}${faded(s) ? ' (apagada)' : ''}</td></tr>`; }).join('')}</tbody></table>
     <p class="muted-note">★ al reconocerla 3 veces al primer intento · ★★ al leerla sola 2 veces en la carrera (modo solo: toca el dibujo correcto sin ayuda ni error; modo juntos: tú confirmas) · ★★★ al leerla 2 veces en menos de 2 segundos.</p>
     <p><b>Últimas carreras de 30 s:</b> ${state.raceLog.length ? state.raceLog.slice(-8).map(r => `${r.date.slice(5)} ${(r.mode || 'juntos') === 'solo' ? 'solo' : 'juntos'}: ${r.count}`).join(' · ') : 'todavía ninguna'}</p>
     <p><b>Límite de misiones por día</b> <span class="muted-note">(sin límite = aprovechar el hiperfoco)</span><br>
@@ -1549,8 +1755,8 @@ function openAdult(){
 }
 
 /* ---------- Prueba de voz: ejemplos para voz.js ---------- */
-const VT_ITEMS = [...VOW, 'm', ...SYL, ...SIGHT_WORDS()];
-function SIGHT_WORDS(){ return ['mamá','mimo','mesa','mano','mono','mamut']; }
+const VT_ITEMS = [...VOW, ...PLANET_ORDER.flatMap(k => [PLANETS[k].c, ...PLANETS[k].syl]),
+  ...new Set([...PLANET_ORDER.flatMap(k => PLANETS[k].sight), ...WORDS.map(o => o.w)])];
 
 /* ================= INFORMACIÓN ================= */
 function openInfo(){
@@ -1561,13 +1767,16 @@ function openInfo(){
     <p>Juego para que niños de 5 y 6 años, con o sin TDAH, aprendan a leer sílabas en español. Debe sentirse como juego, no como clase.</p>
     <h3>Cómo se juega</h3>
     <ul>
-      <li><b>Vuelo 1, Energía:</b> atrapar la sílaba que dice Sílabo y armar «m + vocal».</li>
+      <li><b>Vuelo 1, Energía:</b> atrapar la sílaba que dice Sílabo y armar «consonante + vocal».</li>
       <li><b>Vuelo 2, Misión del día:</b> rota entre Tablero de disparo, Asteroides, Rescate de robots y Radar de sílabas.</li>
+      <li><b>Defensa de la Tierra (jefe final):</b> cuando las cinco sílabas del planeta tienen ★, llega un meteorito gigante. Se arma la sílaba dictada y se dispara; cinco aciertos lo destruyen y el planeta gana una bandera. Luego vuelve de vez en cuando.</li>
       <li><b>Vuelo 3, Carrera de 30 s:</b> solo (lee y toca el dibujo) o con un adulto (lee en voz alta).</li>
       <li>Al terminar, el planeta crece, hay premio para el robot y se puede volar otra misión.</li>
+      <li>Las palabras desbloqueadas (mamá, mano, papá, pera…) aparecen dibujadas en el planeta; al tocarlas se escuchan.</li>
     </ul>
-    <h3>Estrellas</h3>
-    <ul><li>★ reconoce la sílaba al oírla · ★★ la lee sola · ★★★ la lee en menos de 2 segundos. Con ★★ en las cinco sílabas de la M se abre el Planeta P.</li></ul>
+    <h3>Estrellas y planetas</h3>
+    <ul><li>★ reconoce la sílaba al oírla · ★★ la lee sola · ★★★ la lee en menos de 2 segundos.</li>
+      <li>Con ★★ en las cinco sílabas de la M se abre el <b>Planeta P</b>. Ahí las misiones mezclan P y M (pa / ma) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li></ul>
     <h3>Principios para TDAH</h3>
     <ul>
       <li><b>Respuesta en menos de 1 segundo</b> y elogio específico por voz («¡Leíste ma!»): la espera desmotiva.</li>
@@ -1581,7 +1790,7 @@ function openInfo(){
     <h3>Para el adulto</h3>
     <ul>
       <li>Panel del adulto: mantén presionado el engranaje ⚙ 2 segundos. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
-      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm».</li>
+      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm» o con «p».</li>
     </ul>
     <h3>Sin Internet</h3>
     <p>Ábrela una vez con Internet y, en Safari, toca Compartir → Agregar a pantalla de inicio. Así funciona sin conexión y el progreso queda protegido.</p>
