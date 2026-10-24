@@ -1628,8 +1628,9 @@ function openInfo(){
   const f = $('#info');
   f.innerHTML = `<div class="sheet-card info-card" role="dialog" aria-modal="true" aria-label="Información de Robot Sílabo">
     <h2>Robot Sílabo</h2>
+    <h3>Qué es</h3>
     <p>Juego para que niños de 5 y 6 años, con o sin TDAH, aprendan a leer sílabas en español. Debe sentirse como juego, no como clase.</p>
-    <h3>Cómo es una misión</h3>
+    <h3>Cómo se juega</h3>
     <ul>
       <li><b>Vuelo 1, Energía:</b> atrapar la sílaba que dice Sílabo y armar «m + vocal».</li>
       <li><b>Vuelo 2, Misión del día:</b> rota entre Tablero de disparo, Asteroides, Rescate de robots y Radar de sílabas.</li>
@@ -1652,10 +1653,12 @@ function openInfo(){
     <ul>
       <li>Panel del adulto: mantén presionado el engranaje ⚙ 2 segundos. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
       <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm».</li>
-      <li>Sin Internet: en Safari, Compartir → Agregar a pantalla de inicio.</li>
     </ul>
+    <h3>Sin Internet</h3>
+    <p>Ábrela una vez con Internet y, en Safari, toca Compartir → Agregar a pantalla de inicio. Así funciona sin conexión y el progreso queda protegido.</p>
     <p class="muted-note">La app complementa, no reemplaza, la evaluación de dislexia, fonoaudiología o el criterio médico.</p>
-    <p><b>Contacto:</b> <a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>
+    <h3>Contacto</h3>
+    <p><a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>
     <div class="sheet-actions"><button class="s-btn" id="infoClose">Cerrar</button></div></div>`;
   f.hidden = false;
   $('#infoClose').onclick = () => { f.hidden = true; };
