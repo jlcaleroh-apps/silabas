@@ -14,10 +14,13 @@ Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía d
 | **S** | sa, se, si, so, su | Sonido largo y fácil de oír («sss», la serpiente). Con M y P ya se leen palabras reales: sapo, sopa, oso, mesa, piso, paso. |
 | **L** | la, le, li, lo, lu | También se alarga («lll», lengua arriba) y suma palabras como luna, lupa, sala, pala, ola. |
 | **T** | ta, te, ti, to, tu | Muy frecuente; sonido cortito como la P. Abre palabras de tres sílabas: pelota, maleta, tomate. |
+| **N** | na, ne, ni, no, nu | Se alarga por la nariz («nnn»). Suena parecido a la M, así que el juego pone na junto a ma a propósito para practicar la diferencia. |
 
 En cada planeta nuevo las misiones mezclan sus sílabas (más o menos 70 %) con repaso de los planetas anteriores, y las opciones falsas se parecen a la correcta (sa / pa / se) para practicar la diferencia. En el inicio se toca un planeta para viajar.
 
-Para agregar un planeta nuevo (N, D, C…) solo se agregan sus datos en `PLANETS`, su letra en `PLANET_ORDER`, su sonido en `CONS_SOUND`, sus palabras en `WORDS` y sus dibujos en `PICS`.
+Al armar sílabas aparecen como máximo 4 consonantes (la necesaria, la del planeta, la que suena parecido y repaso), para no saturar.
+
+Para agregar un planeta nuevo (D, R, C…) solo se agregan sus datos en `PLANETS`, su letra en `PLANET_ORDER`, su sonido en `CONS_SOUND`, sus palabras en `WORDS` y sus dibujos en `PICS`.
 
 ## Una sesión (5–8 minutos)
 1. **Aterrizaje** en el planeta.
@@ -32,7 +35,7 @@ Para agregar un planeta nuevo (N, D, C…) solo se agregan sus datos en `PLANETS
 - ⭐ reconoce la sílaba al escucharla · ⭐⭐ la lee sola · ⭐⭐⭐ la lee en menos de 2 s.
 - Cada planeta crece con sus propias sesiones. Las palabras desbloqueadas (mamá, mano, papá, pera, sapo, sopa, oso…) aparecen dibujadas sobre el planeta y se escuchan al tocarlas.
 - Las sílabas sin práctica en 3 días "se apagan" y un robot pide rescate.
-- Cada planeta se desbloquea con ⭐⭐ en las 5 sílabas del anterior (M → P → S → L → T) y queda abierto para siempre. El progreso anterior se conserva: todo lo jugado antes cuenta para el planeta M.
+- Cada planeta se desbloquea con ⭐⭐ en las 5 sílabas del anterior (M → P → S → L → T → N) y queda abierto para siempre. El progreso anterior se conserva: todo lo jugado antes cuenta para el planeta M.
 
 ## Reglas de diseño
 - Feedback en menos de 1 segundo, con elogio específico por voz.

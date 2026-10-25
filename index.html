@@ -178,7 +178,7 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 .ship.lit .socket{background:#3a2f86}
 .plus-sign{font-size:44px;font-weight:800;color:#6a63b2;z-index:1}
 .tray{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:100%}
-.tray .gap{width:18px}
+.tray .gap{flex-basis:100%;height:0}
 .slot{width:84px;height:88px;border-radius:22px;background:rgba(46,39,112,.6)}
 .tile{width:84px;height:88px;border-radius:22px;display:grid;place-items:center;font-family:var(--f-read);font-weight:700;font-size:54px;line-height:1;touch-action:none;position:relative;z-index:4;box-shadow:0 6px 0 rgba(0,0,0,.25)}
 .tile.cons{background:var(--coral);color:#fff}
@@ -555,11 +555,19 @@ PLANETS.T = { id:'T', c:'t', name:'Planeta T', syl:['ta','te','ti','to','tu'], c
   radar:[{w:'tren', s:['tren'], e:'🚂'}, {w:'té', s:['té'], e:'🍵'}, {w:'taza', s:['ta','za'], e:'☕'}, {w:'tigre', s:['ti','gre'], e:'🐯'},
          {w:'toro', s:['to','ro'], e:'🐂'}, {w:'moto', s:['mo','to'], e:'🛵'}, {w:'pato', s:['pa','to'], e:'🦆'},
          {w:'tomate', s:['to','ma','te'], e:'🍅'}, {w:'tortuga', s:['tor','tu','ga'], e:'🐢'}] };
+PLANETS.N = { id:'N', c:'n', name:'Planeta N', syl:['na','ne','ni','no','nu'], col:['#c4e8ff','#2f9be6','#0f4675'],
+  intro:'¡Aterrizamos en el planeta N! La N suena por la nariz: nnn. Tus amigas de la M, P, S, L y T vienen de visita.',
+  out:'tápense la nariz y prueben «nnn»: ¡no se puede! Busquen cosas con N: nube, nariz, naranja, nido.',
+  sight:['nena','pino','nota','tina','lana','una'], trees:['#ffd447','#ff7a59'],
+  demo:{s:'nu', pics:['🍐','☁️','✋'], say:'Nu... ¡nube!'},
+  radar:[{w:'nuez', s:['nuez'], e:'🌰'}, {w:'nube', s:['nu','be'], e:'☁️'}, {w:'nido', s:['ni','do'], e:'🪺'}, {w:'nariz', s:['na','riz'], e:'👃'},
+         {w:'nota', s:['no','ta'], e:'🎵'}, {w:'pino', s:['pi','no'], e:'🌲'}, {w:'noche', s:['no','che'], e:'🌃'},
+         {w:'naranja', s:['na','ran','ja'], e:'🍊'}, {w:'nopal', s:['no','pal'], e:'🌵'}] };
 /* Para agregar un planeta: sumar sus datos arriba, su letra aquí, su sonido en CONS_SOUND, sus WORDS y sus PICS. */
-const PLANET_ORDER = ['M', 'P', 'S', 'L', 'T'];
+const PLANET_ORDER = ['M', 'P', 'S', 'L', 'T', 'N'];
 const SYL = PLANETS.M.syl;                                   // sílabas del primer planeta
 const ALL_SYL = PLANET_ORDER.flatMap(k => PLANETS[k].syl);
-const CONS_SOUND = {m:'mmm', p:'pe', s:'sss', l:'lll', t:'te'};
+const CONS_SOUND = {m:'mmm', p:'pe', s:'sss', l:'lll', t:'te', n:'nnn'};
 const VOW = ['a','e','i','o','u'];
 const KEY = 'robotSilabo.v1';
 const DAY = 864e5;
@@ -660,6 +668,12 @@ const WORDS = [
   {w:'maleta',e:'🧳', need:{ma:1, le:1, ta:1}, p:'T'},
   {w:'pelota',e:'⚽', need:{pe:1, lo:1, ta:2}, p:'T'},
   {w:'tomate',e:'🍅', need:{to:1, ma:1, te:2}, p:'T'},
+  {w:'nube',  e:'☁️', need:{nu:1}, p:'N'},
+  {w:'nido',  e:'🪺', need:{ni:1}, p:'N'},
+  {w:'pino',  e:'🌲', need:{pi:1, no:1}, p:'N'},
+  {w:'nota',  e:'🎵', need:{no:1, ta:1}, p:'N'},
+  {w:'tina',  e:'🛁', need:{ti:1, na:1}, p:'N'},
+  {w:'lana',  e:'🧶', need:{la:1, na:2}, p:'N'},
 ];
 /* planeta actual y sílabas en juego (en el planeta P se mezclan P y M) */
 /* Un planeta se abre con ★★ en las 5 sílabas del anterior; una vez abierto, queda abierto. */
@@ -673,12 +687,21 @@ function prevPlanets(pl = curPlanet()){ return PLANET_ORDER.slice(0, PLANET_ORDE
 function poolSyl(){ const pl = curPlanet(); return [...pl.syl, ...prevPlanets(pl).flatMap(k => PLANETS[k].syl)]; }
 function nextLocked(){ return PLANET_ORDER.find(k => !planetOk(k)); }
 function consInPlay(){ return [...new Set(poolSyl().map(s => s[0]))]; }
+/* fichas de consonante para armar: como máximo 4 (la necesaria, la del planeta, la que suena parecido y repaso), en orden de planetas */
+function consChoices(need, max = 4){
+  const all = consInPlay(), pick = [need, curPlanet().c, CONFUSE[need], CONFUSE[curPlanet().c]].filter(c => c && all.includes(c));
+  shuffle(all).forEach(c => pick.push(c));
+  const set = [...new Set(pick)].slice(0, max);
+  return all.filter(c => set.includes(c)).sort((a, b) => PLANET_ORDER.indexOf(a.toUpperCase()) - PLANET_ORDER.indexOf(b.toUpperCase()));
+}
 /* distractores: primero la misma vocal con otra consonante (pa/ma) y la misma consonante con otra vocal */
+const CONFUSE = {n:'m', m:'n'};   // pares que suenan parecido: aparecen juntos a propósito
 function distract(target, n){
   const pool = poolSyl().filter(x => x !== target);
-  const near = shuffle(pool.filter(x => x[1] === target[1] || x[0] === target[0]));
-  const rest = shuffle(pool.filter(x => !near.includes(x)));
-  return [...near, ...rest].slice(0, n);
+  const twin = CONFUSE[target[0]] && pool.includes(CONFUSE[target[0]] + target[1]) && Math.random() < .6 ? [CONFUSE[target[0]] + target[1]] : [];  // na / ma suenan parecido
+  const near = shuffle(pool.filter(x => !twin.includes(x) && (x[1] === target[1] || x[0] === target[0])));
+  const rest = shuffle(pool.filter(x => !twin.includes(x) && !near.includes(x)));
+  return [...twin, ...near, ...rest].slice(0, n);
 }
 function bossReady(pl = curPlanet()){ return pl.syl.every(s => stars(s) >= 1) && !state.ps[pl.id].boss; }
 const TABLE_ICON = '<svg viewBox="0 0 32 24" width="30" height="22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M3 7h26M7 7v14M25 7v14"/></svg>';
@@ -1205,7 +1228,7 @@ function assembleRound(my, target){
   return new Promise(resolve => {
     const stage = $('#stage'); stage.className = 'stage mode-assemble';
     setBubble('¡Arma…');
-    const CONS = consInPlay();
+    const CONS = consChoices(target[0]);
     stage.innerHTML = `<div class="assemble">
       <div class="ship" id="ship"><div class="socket" data-k="c"></div><span class="plus-sign">+</span><div class="socket" data-k="v"></div>
         <div class="lights">${'<i></i>'.repeat(7)}</div></div>
@@ -1360,7 +1383,7 @@ function defensaRound(my){
   return new Promise(resolve => {
     const stage = $('#stage'); stage.className = 'stage mode-tablero';
     setBubble('¡Salva la Tierra!');
-    const CONS = consInPlay();
+    const CONS = consChoices(curPlanet().c);
     stage.innerHTML = `<div class="defensa">
       <div class="earth"></div>
       <div class="boss-hp">${'<i></i>'.repeat(5)}</div>
@@ -1392,6 +1415,7 @@ function defensaRound(my){
     function clearBuilt(){ c = v = ''; bC.textContent = bV.textContent = ''; bC.className = bV.className = ''; stage.querySelectorAll('.bkey.hint').forEach(k => k.classList.remove('hint')); }
     function next(){
       clearBuilt(); errors = 0; target = nextTarget(my, curPlanet().syl.slice());
+      if (!CONS.includes(target[0])){ target = sample(curPlanet().syl.filter(s => s !== target), 1)[0]; my.prev = target; }   // el jefe usa las sílabas de su planeta
       setTimeout(() => { if (alive(my)) prompt(my, hits === 0 ? `¡Arma ${target} y dispara!` : `¡Ahora ${target}!`); }, 200);
     }
     async function fire(){
@@ -1498,6 +1522,11 @@ const PICS = {
   ti: [['tigre','🐯'], ['tijeras','✂️'], ['tiburón','🦈']],
   to: [['tomate','🍅'], ['tortuga','🐢'], ['toro','🐂']],
   tu: [['tulipán','🌷'], ['tuerca','🔩']],
+  na: [['nariz','👃'], ['naranja','🍊']],
+  ne: [['nene','👶']],
+  ni: [['nido','🪺'], ['niño','🧒'], ['niña','👧']],
+  no: [['noche','🌃'], ['nota','🎵'], ['nopal','🌵']],
+  nu: [['nube','☁️'], ['nuez','🌰'], ['nudo','🪢']],
 };
 const pickPic = s => PICS[s][Math.floor(Math.random()*PICS[s].length)];
 function ghostInfo(mode){
@@ -1848,8 +1877,8 @@ function openInfo(){
     </ul>
     <h3>Estrellas y planetas</h3>
     <ul><li>★ reconoce la sílaba al oírla · ★★ la lee sola · ★★★ la lee en menos de 2 segundos.</li>
-      <li>Planetas en orden: <b>M → P → S → L → T</b>. Cada uno se abre con ★★ en las cinco sílabas del anterior. En cada planeta nuevo las misiones mezclan sus sílabas con las ya aprendidas (pa / ma, sa / pa) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li>
-      <li>¿Por qué este orden? M y S son sonidos que se pueden alargar («mmm», «sss») y se oyen fácil; P es muy frecuente y se ve distinta de la M. Con estas tres y las vocales ya se leen palabras reales: mamá, papá, sapo, sopa, oso, mesa. La L también se alarga («lll») y suma palabras como luna, lupa, sala y pala. La T es cortita como la P y abre palabras de tres sílabas: pelota, maleta, tomate.</li></ul>
+      <li>Planetas en orden: <b>M → P → S → L → T → N</b>. Cada uno se abre con ★★ en las cinco sílabas del anterior. En cada planeta nuevo las misiones mezclan sus sílabas con las ya aprendidas (pa / ma, sa / pa) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li>
+      <li>¿Por qué este orden? M y S son sonidos que se pueden alargar («mmm», «sss») y se oyen fácil; P es muy frecuente y se ve distinta de la M. Con estas tres y las vocales ya se leen palabras reales: mamá, papá, sapo, sopa, oso, mesa. La L también se alarga («lll») y suma palabras como luna, lupa, sala y pala. La T es cortita como la P y abre palabras de tres sílabas: pelota, maleta, tomate. La N se alarga por la nariz («nnn») y se practica junto a la M, que suena parecido.</li></ul>
     <h3>Principios para TDAH</h3>
     <ul>
       <li><b>Respuesta en menos de 1 segundo</b> y elogio específico por voz («¡Leíste ma!»): la espera desmotiva.</li>
@@ -1863,7 +1892,7 @@ function openInfo(){
     <h3>Para el adulto</h3>
     <ul>
       <li>Panel del adulto: mantén presionado el engranaje ⚙ 2 segundos. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
-      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm», con «p», con «sss», con «lll» o con «t».</li>
+      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm», con «p», con «sss», con «lll», con «t» o con «nnn».</li>
     </ul>
     <h3>Sin Internet</h3>
     <p>Ábrela una vez con Internet y, en Safari, toca Compartir → Agregar a pantalla de inicio. Así funciona sin conexión y el progreso queda protegido.</p>
