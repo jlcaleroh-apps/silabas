@@ -508,6 +508,7 @@ button.mini-planet.now{border-color:#ffd447;box-shadow:0 0 14px rgba(255,212,71,
 <script src="adulto.js"></script>
 <script src="voz.js"></script>
 <script src="pantalla.js"></script>
+<script src="apps.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1917,9 +1918,12 @@ function openInfo(){
     <h3>Sin Internet</h3>
     <p>Ábrela una vez con Internet y, en Safari, toca Compartir → Agregar a pantalla de inicio. Así funciona sin conexión y el progreso queda protegido.</p>
     <p class="muted-note">La app complementa, no reemplaza, la evaluación de dislexia, fonoaudiología o el criterio médico.</p>
+    <h3>Otras apps</h3>
+    <div id="infoApps"></div>
     <h3>Contacto</h3>
     <p><a href="mailto:jlcaleroh@gmail.com">jlcaleroh@gmail.com</a></p>
     <div class="sheet-actions"><button class="s-btn" id="infoClose">Cerrar</button></div></div>`;
+  if (window.Apps) Apps.montar($('#infoApps'), { actual: 'silabas', idioma: 'es' });   // componente común apps.js
   f.hidden = false;
   $('#infoClose').onclick = () => { f.hidden = true; };
 }
