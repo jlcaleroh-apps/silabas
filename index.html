@@ -538,11 +538,19 @@ PLANETS.S = { id:'S', c:'s', name:'Planeta S', syl:['sa','se','si','so','su'], c
   radar:[{w:'sol', s:['sol'], e:'☀️'}, {w:'sal', s:['sal'], e:'🧂'}, {w:'sapo', s:['sa','po'], e:'🐸'}, {w:'sopa', s:['so','pa'], e:'🍲'},
          {w:'oso', s:['o','so'], e:'🐻'}, {w:'silla', s:['si','lla'], e:'🪑'}, {w:'sandía', s:['san','dí','a'], e:'🍉'},
          {w:'sirena', s:['si','re','na'], e:'🧜'}, {w:'sombrero', s:['som','bre','ro'], e:'👒'}] };
+PLANETS.L = { id:'L', c:'l', name:'Planeta L', syl:['la','le','li','lo','lu'], col:['#d4c4ff','#7b5cff','#32208c'],
+  intro:'¡Aterrizamos en el planeta L! La L suena con la lengua arriba: lll. Tus amigas de la M, la P y la S vienen de visita.',
+  out:'pongan la lengua arriba y canten «lalala»; busquen cosas con L: luna, leche, lápiz, limón.',
+  sight:['lupa','sala','pala','ola','lima','loma'], trees:['#ffd447','#2fbfa8'],
+  demo:{s:'lu', pics:['🍐','🌙','✋'], say:'Lu... ¡luna!'},
+  radar:[{w:'luz', s:['luz'], e:'💡'}, {w:'luna', s:['lu','na'], e:'🌙'}, {w:'lupa', s:['lu','pa'], e:'🔍'}, {w:'loro', s:['lo','ro'], e:'🦜'},
+         {w:'lobo', s:['lo','bo'], e:'🐺'}, {w:'león', s:['le','ón'], e:'🦁'}, {w:'limón', s:['li','món'], e:'🍋'},
+         {w:'lechuga', s:['le','chu','ga'], e:'🥬'}, {w:'lagarto', s:['la','gar','to'], e:'🦎'}] };
 /* Para agregar un planeta: sumar sus datos arriba, su letra aquí, su sonido en CONS_SOUND, sus WORDS y sus PICS. */
-const PLANET_ORDER = ['M', 'P', 'S'];
+const PLANET_ORDER = ['M', 'P', 'S', 'L'];
 const SYL = PLANETS.M.syl;                                   // sílabas del primer planeta
 const ALL_SYL = PLANET_ORDER.flatMap(k => PLANETS[k].syl);
-const CONS_SOUND = {m:'mmm', p:'pe', s:'sss'};
+const CONS_SOUND = {m:'mmm', p:'pe', s:'sss', l:'lll'};
 const VOW = ['a','e','i','o','u'];
 const KEY = 'robotSilabo.v1';
 const DAY = 864e5;
@@ -631,6 +639,12 @@ const WORDS = [
   {w:'silla', e:'🪑', need:{si:1}, p:'S'},
   {w:'suma',  e:'➕', need:{su:1, ma:1}, p:'S'},
   {w:'pesa',  e:'🏋️', need:{pe:1, se:1}, p:'S'},
+  {w:'luna',  e:'🌙', need:{lu:1}, p:'L'},
+  {w:'ola',   e:'🌊', need:{la:1}, p:'L'},
+  {w:'lupa',  e:'🔍', need:{lu:1, pa:1}, p:'L'},
+  {w:'lima',  e:'🍋', need:{li:1, ma:1}, p:'L'},
+  {w:'sala',  e:'🛋️', need:{sa:1, la:1}, p:'L'},
+  {w:'pala',  e:'🪏', need:{pa:1, la:2}, p:'L'},
 ];
 /* planeta actual y sílabas en juego (en el planeta P se mezclan P y M) */
 /* Un planeta se abre con ★★ en las 5 sílabas del anterior; una vez abierto, queda abierto. */
@@ -1459,6 +1473,11 @@ const PICS = {
   si: [['silla','🪑'], ['sirena','🧜']],
   so: [['sol','☀️'], ['sopa','🍲'], ['sombrero','👒']],
   su: [['sushi','🍣'], ['surf','🏄']],
+  la: [['lápiz','✏️'], ['lazo','🎀'], ['lagarto','🦎']],
+  le: [['león','🦁'], ['leche','🥛'], ['lechuga','🥬']],
+  li: [['limón','🍋'], ['libro','📖']],
+  lo: [['loro','🦜'], ['lobo','🐺']],
+  lu: [['luna','🌙'], ['lupa','🔍']],
 };
 const pickPic = s => PICS[s][Math.floor(Math.random()*PICS[s].length)];
 function ghostInfo(mode){
@@ -1809,8 +1828,8 @@ function openInfo(){
     </ul>
     <h3>Estrellas y planetas</h3>
     <ul><li>★ reconoce la sílaba al oírla · ★★ la lee sola · ★★★ la lee en menos de 2 segundos.</li>
-      <li>Planetas en orden: <b>M → P → S</b>. Cada uno se abre con ★★ en las cinco sílabas del anterior. En cada planeta nuevo las misiones mezclan sus sílabas con las ya aprendidas (pa / ma, sa / pa) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li>
-      <li>¿Por qué este orden? M y S son sonidos que se pueden alargar («mmm», «sss») y se oyen fácil; P es muy frecuente y se ve distinta de la M. Con estas tres y las vocales ya se leen palabras reales: mamá, papá, sapo, sopa, oso, mesa.</li></ul>
+      <li>Planetas en orden: <b>M → P → S → L</b>. Cada uno se abre con ★★ en las cinco sílabas del anterior. En cada planeta nuevo las misiones mezclan sus sílabas con las ya aprendidas (pa / ma, sa / pa) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li>
+      <li>¿Por qué este orden? M y S son sonidos que se pueden alargar («mmm», «sss») y se oyen fácil; P es muy frecuente y se ve distinta de la M. Con estas tres y las vocales ya se leen palabras reales: mamá, papá, sapo, sopa, oso, mesa. La L también se alarga («lll») y suma palabras como luna, lupa, sala y pala.</li></ul>
     <h3>Principios para TDAH</h3>
     <ul>
       <li><b>Respuesta en menos de 1 segundo</b> y elogio específico por voz («¡Leíste ma!»): la espera desmotiva.</li>
@@ -1824,7 +1843,7 @@ function openInfo(){
     <h3>Para el adulto</h3>
     <ul>
       <li>Panel del adulto: mantén presionado el engranaje ⚙ 2 segundos. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
-      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm», con «p» o con «sss».</li>
+      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm», con «p», con «sss» o con «lll».</li>
     </ul>
     <h3>Sin Internet</h3>
     <p>Ábrela una vez con Internet y, en Safari, toca Compartir → Agregar a pantalla de inicio. Así funciona sin conexión y el progreso queda protegido.</p>
