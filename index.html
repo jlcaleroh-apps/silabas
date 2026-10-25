@@ -224,9 +224,8 @@ button:focus-visible{outline:4px solid var(--energy);outline-offset:3px}
 @keyframes hover{0%,100%{translate:0 0}50%{translate:0 6px}}
 /* selector de planetas */
 .planet-switch{display:flex;gap:8px;flex:none}
-#game.on-P .stage::after{background:radial-gradient(ellipse at 50% 10%,#7ee8cf,#22b39a 30%,#0b5a52 70%)}
-.mini-planet.pl-M{background:radial-gradient(circle at 35% 30%,#ff9cc8,#e0478f 60%,#7d1e4f)}
-.mini-planet.pl-P{background:radial-gradient(circle at 35% 30%,#a6f5df,#22b39a 60%,#0b5a52)}
+.stage::after{background:radial-gradient(ellipse at 50% 10%,var(--g0,#f07ab1),var(--g1,#e0478f) 30%,var(--g2,#7d1e4f) 70%)!important}
+.mini-planet.pc{background:radial-gradient(circle at 35% 30%,var(--g0),var(--g1) 60%,var(--g2))}
 button.mini-planet{border:3px solid transparent;cursor:pointer;width:52px;height:52px;font-family:inherit}
 button.mini-planet.now{border-color:#ffd447;box-shadow:0 0 14px rgba(255,212,71,.7)}
 .pw.grow{transform-box:fill-box;transform-origin:center}
@@ -414,7 +413,7 @@ button.mini-planet.now{border-color:#ffd447;box-shadow:0 0 14px rgba(255,212,71,
   .bottom-row{grid-template-columns:1fr}
   .item{width:92px;height:106px}
   .txt{font-size:40px}
-  .tile,.slot{width:62px;height:68px;font-size:40px}
+  .tile,.slot{width:58px;height:66px;font-size:38px}
   .cap-robot{width:72px}
   .cell{width:30px;height:36px}
   .energy{gap:6px}
@@ -425,6 +424,7 @@ button.mini-planet.now{border-color:#ffd447;box-shadow:0 0 14px rgba(255,212,71,
   .meteor .txt{font-size:38px}
   .cannon{bottom:100px}
   .boss{width:120px;height:120px}
+  .tray{gap:6px}.tray .gap{flex-basis:100%;height:0}
   .dkeys .row{gap:8px;flex-wrap:nowrap}.dkeys .bkey{min-width:56px;height:64px;font-size:32px;padding:0 6px}
   .syl-built{bottom:170px}.syl-built span{min-width:54px;height:58px;font-size:32px}
 }
@@ -516,22 +516,33 @@ const PLANETS = {
   M: { id:'M', c:'m', name:'Planeta M', syl:['ma','me','mi','mo','mu'], col:['#ff9cc8','#e0478f','#7d1e4f'],
        intro:'¡Aterrizamos en el planeta M! Sílabo necesita energía de sílabas.',
        out:'busquen juntos cosas que empiecen con «mmm»: mamá, mano, mesa, mono, moto.',
-       sight:['mamá','mimo','mesa','mano','mono','mamut'],
+       sight:['mamá','mimo','mesa','mano','mono','mamut'], trees:['#2fbfa8','#3fd0b8'],
+       demo:{s:'mo', pics:['🍎','🛵','🍯'], say:'Mo... ¡moto!'},
        radar:[{w:'mar', s:['mar'], e:'🌊'}, {w:'mu', s:['mu'], e:'🐄'}, {w:'mamá', s:['ma','má'], e:'👩'}, {w:'mano', s:['ma','no'], e:'✋'},
               {w:'moto', s:['mo','to'], e:'🛵'}, {w:'mono', s:['mo','no'], e:'🐒'}, {w:'mochila', s:['mo','chi','la'], e:'🎒'},
               {w:'muñeca', s:['mu','ñe','ca'], e:'🪆'}, {w:'manzana', s:['man','za','na'], e:'🍎'}] },
   P: { id:'P', c:'p', name:'Planeta P', syl:['pa','pe','pi','po','pu'], col:['#a6f5df','#22b39a','#0b5a52'],
        intro:'¡Aterrizamos en el planeta P! Aquí viven las sílabas de la P, y tus amigas de la M vienen de visita.',
        out:'busquen juntos cosas que empiecen con «p»: papá, pera, piña, pato, puerta. Celebren cada una.',
-       sight:['papá','pera','piña','puma','mapa','pato'],
+       sight:['papá','pera','piña','puma','mapa','pato'], trees:['#ffb347','#ffd447'],
+       demo:{s:'pa', pics:['✋','🦆','🍐'], say:'Pa... ¡pato!'},
        radar:[{w:'pan', s:['pan'], e:'🍞'}, {w:'pez', s:['pez'], e:'🐟'}, {w:'papá', s:['pa','pá'], e:'👨'}, {w:'pera', s:['pe','ra'], e:'🍐'},
               {w:'piña', s:['pi','ña'], e:'🍍'}, {w:'pato', s:['pa','to'], e:'🦆'}, {w:'pulpo', s:['pul','po'], e:'🐙'},
               {w:'paloma', s:['pa','lo','ma'], e:'🕊️'}, {w:'pelota', s:['pe','lo','ta'], e:'⚽'}] },
 };
-const PLANET_ORDER = ['M', 'P'];
+PLANETS.S = { id:'S', c:'s', name:'Planeta S', syl:['sa','se','si','so','su'], col:['#ffe59a','#f2a516','#8a4b00'],
+  intro:'¡Aterrizamos en el planeta S! La S suena como una serpiente: sss. Tus amigas de la M y la P vienen de visita.',
+  out:'jueguen a la serpiente: alarguen la «sss» y busquen cosas con S: sol, sopa, silla, sapo.',
+  sight:['sapo','sopa','oso','mesa','piso','paso'], trees:['#e0478f','#62e6e1'],
+  demo:{s:'so', pics:['🍐','☀️','✋'], say:'So... ¡sol!'},
+  radar:[{w:'sol', s:['sol'], e:'☀️'}, {w:'sal', s:['sal'], e:'🧂'}, {w:'sapo', s:['sa','po'], e:'🐸'}, {w:'sopa', s:['so','pa'], e:'🍲'},
+         {w:'oso', s:['o','so'], e:'🐻'}, {w:'silla', s:['si','lla'], e:'🪑'}, {w:'sandía', s:['san','dí','a'], e:'🍉'},
+         {w:'sirena', s:['si','re','na'], e:'🧜'}, {w:'sombrero', s:['som','bre','ro'], e:'👒'}] };
+/* Para agregar un planeta: sumar sus datos arriba, su letra aquí, su sonido en CONS_SOUND, sus WORDS y sus PICS. */
+const PLANET_ORDER = ['M', 'P', 'S'];
 const SYL = PLANETS.M.syl;                                   // sílabas del primer planeta
 const ALL_SYL = PLANET_ORDER.flatMap(k => PLANETS[k].syl);
-const CONS_SOUND = {m:'mmm', p:'pe'};
+const CONS_SOUND = {m:'mmm', p:'pe', s:'sss'};
 const VOW = ['a','e','i','o','u'];
 const KEY = 'robotSilabo.v1';
 const DAY = 864e5;
@@ -545,7 +556,7 @@ function freshPs(){ return Object.fromEntries(PLANET_ORDER.map(k => [k, {session
 function freshState(color = null){
   return {v:3, sessions:0, last:null, dayShift:0, planet:'M', ps:freshPs(),
     syl:Object.fromEntries(ALL_SYL.map(s => [s, freshSyl()])),
-    words:[], owned:[], color, races:{}, raceLog:[], daily:{date:null, n:0}, streak:{n:0, last:null, best:0}, pSeen:false};
+    words:[], owned:[], color, races:{}, raceLog:[], daily:{date:null, n:0}, streak:{n:0, last:null, best:0}, pSeen:false, unl:[]};
 }
 function normState(d){
   const s = Object.assign(freshState(), d || {});
@@ -553,6 +564,7 @@ function normState(d){
   if (!(d || {}).ps){ s.ps = freshPs(); s.ps.M.sessions = s.sessions || 0; }          // progreso anterior: todo era del planeta M
   PLANET_ORDER.forEach(k => { if (!s.ps[k]) s.ps[k] = {sessions:0, boss:false}; });
   if (!PLANETS[s.planet]) s.planet = 'M';
+  if (!Array.isArray((d || {}).unl)) s.unl = s.pSeen ? ['P'] : [];
   if (!Array.isArray(s.raceLog)) s.raceLog = Object.entries(s.races || {}).sort().map(([date, count]) => ({date, count}));
   if (!s.daily) s.daily = {date:null, n:0};
   if (!s.streak) s.streak = {n:0, last:null, best:0};
@@ -613,13 +625,24 @@ const WORDS = [
   {w:'pollo', e:'🐔', need:{po:1}, p:'P'},
   {w:'puma',  e:'🐆', need:{pu:1, ma:1}, p:'P'},
   {w:'mapa',  e:'🗺️', need:{ma:1, pa:2}, p:'P'},
+  {w:'oso',   e:'🐻', need:{so:1}, p:'S'},
+  {w:'sapo',  e:'🐸', need:{sa:1, po:1}, p:'S'},
+  {w:'sopa',  e:'🍲', need:{so:1, pa:1}, p:'S'},
+  {w:'silla', e:'🪑', need:{si:1}, p:'S'},
+  {w:'suma',  e:'➕', need:{su:1, ma:1}, p:'S'},
+  {w:'pesa',  e:'🏋️', need:{pe:1, se:1}, p:'S'},
 ];
 /* planeta actual y sílabas en juego (en el planeta P se mezclan P y M) */
-function pUnlocked(){ return state.pSeen || SYL.every(s => stars(s) >= 2); }
-function planetOk(k){ return k === 'M' || (k === 'P' && pUnlocked()); }
+/* Un planeta se abre con ★★ en las 5 sílabas del anterior; una vez abierto, queda abierto. */
+function planetDone(k){ return PLANETS[k].syl.every(s => stars(s) >= 2); }
+function planetOk(k){ const i = PLANET_ORDER.indexOf(k); return i === 0 || (i > 0 && (state.unl.includes(k) || planetDone(PLANET_ORDER[i - 1]))); }
+function pUnlocked(){ return planetOk('P'); }
 function curPlanet(){ return PLANETS[planetOk(state.planet) ? state.planet : 'M']; }
 function planetsOpen(){ return PLANET_ORDER.filter(planetOk); }
-function poolSyl(){ const pl = curPlanet(); return pl.id === 'M' ? pl.syl.slice() : [...pl.syl, ...PLANETS.M.syl]; }
+function prevPlanets(pl = curPlanet()){ return PLANET_ORDER.slice(0, PLANET_ORDER.indexOf(pl.id)); }
+/* sílabas en juego: las del planeta actual + repaso de los planetas anteriores */
+function poolSyl(){ const pl = curPlanet(); return [...pl.syl, ...prevPlanets(pl).flatMap(k => PLANETS[k].syl)]; }
+function nextLocked(){ return PLANET_ORDER.find(k => !planetOk(k)); }
 function consInPlay(){ return [...new Set(poolSyl().map(s => s[0]))]; }
 /* distractores: primero la misma vocal con otra consonante (pa/ma) y la misma consonante con otra vocal */
 function distract(target, n){
@@ -783,7 +806,7 @@ function planetSVG(stage, popLast = false, pl = curPlanet(), opts = {}){
   const bot = c => `<rect x="-3" y="-44" width="6" height="10" fill="#a9afd6"/><circle cx="0" cy="-46" r="4" fill="#ffd447"/><rect x="-13" y="-36" width="26" height="20" rx="7" fill="${c}"/><circle cx="-5" cy="-26" r="3" fill="#1b2050"/><circle cx="5" cy="-26" r="3" fill="#1b2050"/><rect x="-10" y="-16" width="20" height="16" rx="5" fill="${c}"/>`;
   const flowers = '<g><line x1="-10" y1="0" x2="-10" y2="-18" stroke="#2fbfa8" stroke-width="3"/><circle cx="-10" cy="-22" r="6" fill="#ffd447"/><line x1="8" y1="0" x2="8" y2="-14" stroke="#2fbfa8" stroke-width="3"/><circle cx="8" cy="-18" r="5" fill="#62e6e1"/></g>';
   const flag = '<line x1="0" y1="2" x2="0" y2="-46" stroke="#c9cdea" stroke-width="4"/><path d="M0 -46 L26 -38 L0 -30 Z" fill="#ffd447"/><circle cx="12" cy="-38" r="3" fill="#ff7a59"/>';
-  const treeC = pl.id === 'P' ? ['#ffb347', '#ffd447'] : ['#2fbfa8', '#3fd0b8'];
+  const treeC = pl.trees;
   add(1, 0, base); add(2, 34, antenna); add(3, -36, tree(treeC[0])); add(3, 62, tree(treeC[1]));
   add(4, -62, bot('#ffd447')); add(5, 84, bot('#62e6e1')); add(6, -86, flowers); add(7, 14, bot('#ff7a59'));
   if (state.ps[pl.id].boss) items.push({minStage: 99, angle: -14, svg: flag});      // bandera de la Defensa de la Tierra
@@ -828,6 +851,7 @@ function wirePlanetWords(root){ root.querySelectorAll('.pw[data-w]').forEach(g =
 
 /* ================= HOME ================= */
 function pProgress(){ return SYL.filter(s => stars(s) >= 2).length; }
+function planetVars(pl){ return `--g0:${pl.col[0]};--g1:${pl.col[1]};--g2:${pl.col[2]}`; }
 function ps(){ return state.ps[curPlanet().id]; }
 /* Racha viva: cuenta si la última misión fue hoy o ayer. */
 function streakNow(){ const st = state.streak; if (!st || !st.last) return 0; const g = daysBetween(st.last, today()); return g <= 1 ? st.n : 0; }
@@ -860,12 +884,13 @@ function renderHome(){
   $('#wordsRow').querySelectorAll('.word-chip').forEach(b => b.onclick = () => { sfx.tap(); sayUnit(b.dataset.w); });
   const sn = streakNow();
   $('#streak').innerHTML = sn ? `<div class="streak" aria-label="${sn} días seguidos">${streakHTML()}</div>` : '';
-  const n = pProgress();
-  if (!pUnlocked()) $('#pPlanet').innerHTML = `<div class="mini-planet locked">P</div><div><b>Planeta P</b><br>${n} de 5 sílabas con ★★</div>`;
+  const nx = nextLocked(), last = planetsOpen().slice(-1)[0];
+  const nDone = PLANETS[last].syl.filter(s => stars(s) >= 2).length;
+  const nextTxt = nx ? `Planeta ${nx}: ${nDone} de 5 de la ${last} con ★★` : 'Siguiente planeta: muy pronto';
+  if (!pUnlocked()) $('#pPlanet').innerHTML = `<div class="mini-planet locked">P</div><div><b>Planeta P</b><br>${nDone} de 5 sílabas con ★★</div>`;
   else {
-    const nP = PLANETS.P.syl.filter(s => stars(s) >= 2).length;
-    $('#pPlanet').innerHTML = `<div class="planet-switch">${planetsOpen().map(k => `<button class="mini-planet pl-${k}${k === pl.id ? ' now' : ''}" data-pl="${k}" aria-label="Viajar al ${PLANETS[k].name}">${k}</button>`).join('')}</div>
-      <div><b>${bossReady(pl) ? '¡Alerta! Un meteorito va hacia la Tierra' : 'Toca un planeta para viajar'}</b><br>${nP >= 5 ? 'Siguiente planeta: muy pronto' : `Siguiente planeta: ${nP} de 5 de la P con ★★`}</div>`;
+    $('#pPlanet').innerHTML = `<div class="planet-switch">${planetsOpen().map(k => `<button class="mini-planet pc${k === pl.id ? ' now' : ''}" style="${planetVars(PLANETS[k])}" data-pl="${k}" aria-label="Viajar al ${PLANETS[k].name}">${k}</button>`).join('')}</div>
+      <div><b>${bossReady(pl) ? '¡Alerta! Un meteorito va hacia la Tierra' : 'Toca un planeta para viajar'}</b><br>${nextTxt}</div>`;
     $('#pPlanet').querySelectorAll('[data-pl]').forEach(btn => btn.onclick = () => {
       sfx.tap(); state.planet = btn.dataset.pl; save(); renderHome(); speak(`¡Vamos al ${PLANETS[btn.dataset.pl].name}!`);
     });
@@ -948,7 +973,7 @@ function startSession(){
   $('#sayAgain').innerHTML = SPK;
   $('#stage').innerHTML = ''; $('#stage').className = 'stage';
   setBubble('¡Vamos!');
-  $('#game').classList.toggle('on-P', curPlanet().id === 'P');
+  $('#game').setAttribute('style', planetVars(curPlanet()));
   show('game'); renderEnergy(); renderFlights();
   runSession(S);
 }
@@ -983,7 +1008,7 @@ function nextTarget(my, prefer = []){
     if (fresh.length) t = fresh[0];
     else {
       const pool = poolSyl().filter(s => s !== my.prev), home = curPlanet().syl;
-      const w = pool.map(s => { const r = state.syl[s]; return (1 + Math.min(r.miss,4) + (3 - stars(s))*2 + (faded(s)?4:0) + (my.heard.has(s)?0:2)) * (home.includes(s) ? 2 : 1); });
+      const w = pool.map(s => { const r = state.syl[s]; return (1 + Math.min(r.miss,4) + (3 - stars(s))*2 + (faded(s)?4:0) + (my.heard.has(s)?0:2)) * (home.includes(s) ? Math.max(1, prevPlanets().length) * 1.5 : 1); });
       let x = Math.random()*w.reduce((a,b)=>a+b,0);
       t = pool.find((s,i) => (x -= w[i]) < 0) || pool[0];
     }
@@ -1429,6 +1454,11 @@ const PICS = {
   pi: [['piña','🍍'], ['pizza','🍕'], ['pie','🦶']],
   po: [['pollito','🐥'], ['policía','👮']],
   pu: [['pulpo','🐙'], ['puma','🐆'], ['puerta','🚪']],
+  sa: [['sapo','🐸'], ['sandía','🍉'], ['sal','🧂']],
+  se: [['serpiente','🐍'], ['semáforo','🚦'], ['seis','6️⃣']],
+  si: [['silla','🪑'], ['sirena','🧜']],
+  so: [['sol','☀️'], ['sopa','🍲'], ['sombrero','👒']],
+  su: [['sushi','🍣'], ['surf','🏄']],
 };
 const pickPic = s => PICS[s][Math.floor(Math.random()*PICS[s].length)];
 function ghostInfo(mode){
@@ -1462,11 +1492,11 @@ function flightRace(my){
 function introSolo(my, resolve){
   const stage = $('#stage'), g = ghostInfo('solo');
   stage.innerHTML = `<div class="race-intro">
-    <div class="card" style="font-size:min(90px,14vh)">${curPlanet().id === 'P' ? 'pa' : 'mo'}</div>
-    <div class="pics demo">${(curPlanet().id === 'P' ? ['✋','🦆','🍐'] : ['🍎','🛵','🍯']).map((e,i) => `<span class="pic-btn${i === 1 ? ' right' : ''}">${e}</span>`).join('')}</div>
+    <div class="card" style="font-size:min(90px,14vh)">${curPlanet().demo.s}</div>
+    <div class="pics demo">${curPlanet().demo.pics.map((e,i) => `<span class="pic-btn${i === 1 ? ' right' : ''}">${e}</span>`).join('')}</div>
     <button class="big-btn" id="raceGo">¡Listo!</button></div>`;
   setBubble('Lee y toca el dibujo');
-  prompt(my, `Lee la sílaba y toca el dibujo que empieza igual. ${curPlanet().id === 'P' ? 'Pa... ¡pato!' : 'Mo... ¡moto!'}` + (g.real ? ` ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : ''));
+  prompt(my, `Lee la sílaba y toca el dibujo que empieza igual. ${curPlanet().demo.say}` + (g.real ? ` ${g.said[0].toUpperCase() + g.said.slice(1)} te espera.` : ''));
   $('#raceGo').onclick = async () => { await countdown(my, false); if (alive(my)) runRace(my, 'solo', g, resolve); };
 }
 function introJuntos(my, resolve){
@@ -1606,9 +1636,12 @@ function finishSession(my){
   if (gap !== 0){ st.n = gap === 1 ? st.n + 1 : 1; st.last = today(); st.best = Math.max(st.best || 0, st.n); }
   const newWords = WORDS.filter(o => !state.words.includes(o.w) && Object.entries(o.need).every(([s, n]) => stars(s) >= n));
   newWords.forEach(o => state.words.push(o.w));
-  const pNow = pProgress() >= 5 && !state.pSeen; if (pNow){ state.pSeen = true; state.planet = 'P'; }
+  // planeta recién abierto: el siguiente al actual, si se completó con ★★
+  const iNext = PLANET_ORDER.indexOf(pl.id) + 1, kNext = PLANET_ORDER[iNext];
+  const newPl = kNext && planetDone(pl.id) && !state.unl.includes(kNext) ? PLANETS[kNext] : null;
+  if (newPl){ state.unl.push(newPl.id); state.planet = newPl.id; if (newPl.id === 'P') state.pSeen = true; }
   const bossNow = my.bossWon === pl.id && !state.ps[pl.id].boss; if (my.bossWon) state.ps[pl.id].boss = true;
-  const nextSoon = pl.id === 'P' && PLANETS.P.syl.every(s => stars(s) >= 2) && !state.sSeen; if (nextSoon) state.sSeen = true;
+  const nextSoon = !kNext && planetDone(pl.id) && !state.allSeen; if (nextSoon) state.allSeen = true;
   save();
   show('end');
   const practiced = ALL_SYL.filter(s => my.heard.has(s) || my.read.has(s));
@@ -1634,13 +1667,13 @@ function finishSession(my){
       ${o.p === pl.id ? `<div class="end-planet small">${planetSVG(stage, false, pl, {newWord:o.w})}</div>` : ''}<p class="end-sub">Tócala para escucharla</p>`,
     say:`¡Palabra nueva en tu planeta: ${o.w}!`
   }));
-  if (pNow) panels.push({
-    html:`<div class="mini-planet pl-P" style="width:140px;height:140px;font-size:70px">P</div><h2 class="end-title">¡Planeta P desbloqueado!</h2><p class="end-sub">Leíste las cinco sílabas de la M. ¡Ya puedes viajar al planeta P: pa, pe, pi, po, pu!</p>`,
-    say:'¡Increíble! Leíste las cinco sílabas de la M. ¡Ya puedes viajar al planeta P!'
+  if (newPl) panels.push({
+    html:`<div class="mini-planet pc" style="${planetVars(newPl)};width:140px;height:140px;font-size:70px">${newPl.id}</div><h2 class="end-title">¡${newPl.name} desbloqueado!</h2><p class="end-sub">Leíste las cinco sílabas de la ${pl.id}. ¡Ya puedes viajar al planeta ${newPl.id}: ${newPl.syl.join(', ')}!</p>`,
+    say:`¡Increíble! Leíste las cinco sílabas de la ${pl.id}. ¡Ya puedes viajar al planeta ${newPl.id}!`
   });
   if (nextSoon) panels.push({
-    html:`<div class="mini-planet locked" style="width:140px;height:140px;font-size:70px">S</div><h2 class="end-title">¡Leíste toda la P!</h2><p class="end-sub">Sílabo ya ve el siguiente planeta en su mapa. ¡Muy pronto!</p>`,
-    say:'¡Leíste las cinco sílabas de la P! Sílabo ya ve el siguiente planeta en su mapa.'
+    html:`<div class="mini-planet locked" style="width:140px;height:140px;font-size:70px">?</div><h2 class="end-title">¡Leíste toda la ${pl.id}!</h2><p class="end-sub">Sílabo ya ve el siguiente planeta en su mapa. ¡Muy pronto!</p>`,
+    say:`¡Leíste las cinco sílabas de la ${pl.id}! Sílabo ya ve el siguiente planeta en su mapa.`
   });
   panels.push({reward:true});
   panels.push(limitReached() ? {
@@ -1776,7 +1809,8 @@ function openInfo(){
     </ul>
     <h3>Estrellas y planetas</h3>
     <ul><li>★ reconoce la sílaba al oírla · ★★ la lee sola · ★★★ la lee en menos de 2 segundos.</li>
-      <li>Con ★★ en las cinco sílabas de la M se abre el <b>Planeta P</b>. Ahí las misiones mezclan P y M (pa / ma) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li></ul>
+      <li>Planetas en orden: <b>M → P → S</b>. Cada uno se abre con ★★ en las cinco sílabas del anterior. En cada planeta nuevo las misiones mezclan sus sílabas con las ya aprendidas (pa / ma, sa / pa) para practicar la diferencia. En el inicio se toca un planeta para viajar.</li>
+      <li>¿Por qué este orden? M y S son sonidos que se pueden alargar («mmm», «sss») y se oyen fácil; P es muy frecuente y se ve distinta de la M. Con estas tres y las vocales ya se leen palabras reales: mamá, papá, sapo, sopa, oso, mesa.</li></ul>
     <h3>Principios para TDAH</h3>
     <ul>
       <li><b>Respuesta en menos de 1 segundo</b> y elogio específico por voz («¡Leíste ma!»): la espera desmotiva.</li>
@@ -1790,7 +1824,7 @@ function openInfo(){
     <h3>Para el adulto</h3>
     <ul>
       <li>Panel del adulto: mantén presionado el engranaje ⚙ 2 segundos. Ahí están el progreso, los jugadores, el límite diario opcional, la prueba de voz y el respaldo del progreso.</li>
-      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm» o con «p».</li>
+      <li>Fuera de la pantalla: busquen juntos cosas que empiecen con «mmm», con «p» o con «sss».</li>
     </ul>
     <h3>Sin Internet</h3>
     <p>Ábrela una vez con Internet y, en Safari, toca Compartir → Agregar a pantalla de inicio. Así funciona sin conexión y el progreso queda protegido.</p>

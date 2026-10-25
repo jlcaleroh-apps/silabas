@@ -5,7 +5,17 @@ Juego para iPad que ayuda a niños de 5 y 6 años con TDAH a aprender a leer sí
 **Jugar:** https://jlcaleroh-apps.github.io/silabas/
 
 ## La historia
-Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía de sílabas. Cada planeta es una consonante: **Planeta M** (ma, me, mi, mo, mu) y **Planeta P** (pa, pe, pi, po, pu). En el planeta P las misiones mezclan P y M (pa / ma) para practicar la diferencia. En el inicio se toca un planeta para viajar.
+Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía de sílabas. Cada planeta es una consonante, en este orden:
+
+| Planeta | Sílabas | Por qué va aquí |
+|---|---|---|
+| **M** | ma, me, mi, mo, mu | Sonido que se puede alargar («mmm»), se ve con los labios y aparece en «mamá». |
+| **P** | pa, pe, pi, po, pu | Muy frecuente («papá») y se ve distinta de la M. |
+| **S** | sa, se, si, so, su | Sonido largo y fácil de oír («sss», la serpiente). Con M y P ya se leen palabras reales: sapo, sopa, oso, mesa, piso, paso. |
+
+En cada planeta nuevo las misiones mezclan sus sílabas (más o menos 70 %) con repaso de los planetas anteriores, y las opciones falsas se parecen a la correcta (sa / pa / se) para practicar la diferencia. En el inicio se toca un planeta para viajar.
+
+Para agregar un planeta nuevo (L, T, N…) solo se agregan sus datos en `PLANETS`, su letra en `PLANET_ORDER`, su sonido en `CONS_SOUND`, sus palabras en `WORDS` y sus dibujos en `PICS`.
 
 ## Una sesión (5–8 minutos)
 1. **Aterrizaje** en el planeta.
@@ -18,9 +28,9 @@ Sílabo, un robot astronauta, quedó varado. Su nave solo arranca con energía d
 ## Progreso
 - La carrera compara con tu carrera anterior (cohete fantasma).
 - ⭐ reconoce la sílaba al escucharla · ⭐⭐ la lee sola · ⭐⭐⭐ la lee en menos de 2 s.
-- Cada planeta crece con sus propias sesiones. Las palabras desbloqueadas (mamá, mano, papá, pera, piña, puma, mapa…) aparecen dibujadas sobre el planeta y se escuchan al tocarlas.
+- Cada planeta crece con sus propias sesiones. Las palabras desbloqueadas (mamá, mano, papá, pera, sapo, sopa, oso…) aparecen dibujadas sobre el planeta y se escuchan al tocarlas.
 - Las sílabas sin práctica en 3 días "se apagan" y un robot pide rescate.
-- El Planeta P se desbloquea con ⭐⭐ en las 5 sílabas de la M. El progreso anterior se conserva: todo lo jugado antes cuenta para el planeta M.
+- Cada planeta se desbloquea con ⭐⭐ en las 5 sílabas del anterior (M → P → S) y queda abierto para siempre. El progreso anterior se conserva: todo lo jugado antes cuenta para el planeta M.
 
 ## Reglas de diseño
 - Feedback en menos de 1 segundo, con elogio específico por voz.
